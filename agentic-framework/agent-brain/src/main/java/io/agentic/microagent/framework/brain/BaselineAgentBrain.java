@@ -14,6 +14,7 @@ import io.agentic.microagent.framework.core.model.AgentRequest;
 import io.agentic.microagent.framework.core.model.AgentResponse;
 import io.agentic.microagent.framework.core.planning.ExecutionPlan;
 import io.agentic.microagent.framework.core.planning.ExecutionResult;
+import io.agentic.microagent.framework.core.synthesizer.AgentSynthesizer;
 import io.agentic.microagent.framework.shared.model.MemorySnapshot;
 import io.agentic.microagent.framework.shared.model.ResponseMetadata;
 import java.time.Duration;
@@ -48,6 +49,8 @@ public class BaselineAgentBrain implements AgentBrain {
 
 	private final MemoryManager memoryManager;
 
+	private final AgentSynthesizer agentSynthesizer;
+
 	@Override
 	public AgentResponse process(AgentRequest request) {
 		Instant startTime = Instant.now();
@@ -79,7 +82,7 @@ public class BaselineAgentBrain implements AgentBrain {
 
 			// Step 6: Build response
 			log.debug("Building response...");
-			AgentResponse response = buildResponse(request, decision, result, startTime);
+			AgentResponse response = agentSynthesizer.synthesize(request, decision, result, startTime);
 
 			// Step 7: Store in memory
 			log.debug("Storing in memory...");

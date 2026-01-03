@@ -1,7 +1,5 @@
 package io.agentic.microagent.framework.core.context;
 
-import io.agentic.microagent.framework.shared.model.UserProfile;
-import java.util.Map;
 import lombok.Builder;
 import lombok.Data;
 
@@ -12,16 +10,14 @@ import lombok.Data;
 @Builder
 public class AgentContext {
 
-	private String conversationId;
+	private final String conversationId;
 
-	private String userId;
+	private final String userId;
 
-	private UserProfile userProfile;
+	private final AgenticContextState<String, String> environmentContext;
 
-	private Map<String, Object> environmentContext;
+	private final AgenticContextState<String, String> domainContext;
 
-	private Map<String, Object> domainContext;
-
-	private Map<String, Object> technicalContext;
+	private final AgenticContextState<String, String> technicalContext;
 
 }

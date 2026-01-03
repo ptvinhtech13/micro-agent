@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
  * - Implement retry logic
  */
 @Slf4j
-public class SimpleExecutionEngine implements ExecutionEngine {
+public class SimpleExecutionTaskEngine implements ExecutionEngine {
 
 	@Override
 	public ExecutionResult execute(ExecutionPlan plan, AgentContext context) {
