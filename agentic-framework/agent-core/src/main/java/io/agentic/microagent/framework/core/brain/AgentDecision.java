@@ -1,7 +1,6 @@
 package io.agentic.microagent.framework.core.brain;
 
 import java.util.List;
-
 import lombok.Builder;
 import lombok.Data;
 
@@ -24,7 +23,10 @@ public class AgentDecision {
 
 	public enum DecisionType {
 
-		DIRECT_RESPONSE, TOOL_EXECUTION, MULTI_STEP_PLAN, CLARIFICATION_NEEDED
+		DIRECT_RESPONSE,
+		TOOL_EXECUTION,
+		MULTI_STEP_PLAN,
+		CLARIFICATION_NEEDED
 
 	}
 

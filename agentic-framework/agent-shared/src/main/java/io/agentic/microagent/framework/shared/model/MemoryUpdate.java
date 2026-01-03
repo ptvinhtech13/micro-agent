@@ -20,7 +20,10 @@ public class MemoryUpdate {
 
 	public enum MemoryType {
 
-		WORKING, EPISODIC, SEMANTIC, PROCEDURAL
+		WORKING,
+		EPISODIC,
+		SEMANTIC,
+		PROCEDURAL
 
 	}
 

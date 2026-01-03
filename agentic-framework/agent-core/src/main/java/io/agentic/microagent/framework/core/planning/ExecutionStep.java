@@ -1,7 +1,6 @@
 package io.agentic.microagent.framework.core.planning;
 
 import java.util.Map;
-
 import lombok.Builder;
 import lombok.Data;
 
@@ -26,7 +25,10 @@ public class ExecutionStep {
 
 	public enum StepType {
 
-		LLM_CALL, TOOL_EXECUTION, DATA_TRANSFORM, DECISION
+		LLM_CALL,
+		TOOL_EXECUTION,
+		DATA_TRANSFORM,
+		DECISION
 
 	}
 

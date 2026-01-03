@@ -1,7 +1,6 @@
 package io.agentic.microagent.framework.shared.model;
 
 import java.util.Map;
-
 import lombok.Builder;
 import lombok.Data;
 

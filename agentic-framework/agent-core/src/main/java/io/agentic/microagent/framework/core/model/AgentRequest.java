@@ -1,10 +1,9 @@
 package io.agentic.microagent.framework.core.model;
 
+import io.agentic.microagent.framework.shared.model.Attachment;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
-
-import io.agentic.microagent.framework.shared.model.Attachment;
 import lombok.Builder;
 import lombok.Data;
 

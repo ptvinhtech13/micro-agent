@@ -16,15 +16,15 @@
     <description>Parent module for Agent Framework components</description>
 
     <modules>
-        <module>agent-core</module>
         <module>agent-brain</module>
         <module>agent-context</module>
+        <module>agent-core</module>
         <module>agent-engage</module>
         <module>agent-memory</module>
+        <module>agent-planning</module>
+        <module>agent-reasoning</module>
         <module>agent-shared</module>
         <module>agent-task</module>
         <module>agent-tools</module>
-        <module>agent-planning</module>
-        <module>agent-reasoning</module>
     </modules>
 </project>

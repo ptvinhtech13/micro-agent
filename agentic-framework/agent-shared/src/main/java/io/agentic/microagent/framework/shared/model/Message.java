@@ -2,7 +2,6 @@ package io.agentic.microagent.framework.shared.model;
 
 import java.time.Instant;
 import java.util.Map;
-
 import lombok.Builder;
 import lombok.Data;
 
@@ -25,7 +24,9 @@ public class Message {
 
 	public enum Role {
 
-		USER, ASSISTANT, SYSTEM
+		USER,
+		ASSISTANT,
+		SYSTEM
 
 	}
 

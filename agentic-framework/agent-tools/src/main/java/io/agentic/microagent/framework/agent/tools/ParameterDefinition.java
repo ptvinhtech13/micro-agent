@@ -22,7 +22,12 @@ public class ParameterDefinition {
 
 	public enum DataType {
 
-		STRING, INTEGER, FLOAT, BOOLEAN, OBJECT, ARRAY
+		STRING,
+		INTEGER,
+		FLOAT,
+		BOOLEAN,
+		OBJECT,
+		ARRAY
 
 	}
 

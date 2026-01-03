@@ -1,15 +1,13 @@
 package io.agentic.microagent.framework.planning;
 
+import io.agentic.microagent.framework.core.PlanningEngine;
+import io.agentic.microagent.framework.core.brain.AgentDecision;
+import io.agentic.microagent.framework.core.brain.Intent;
+import io.agentic.microagent.framework.core.context.AgentContext;
+import io.agentic.microagent.framework.core.planning.ExecutionPlan;
+import io.agentic.microagent.framework.core.planning.ExecutionStep;
 import java.util.HashMap;
 import java.util.UUID;
-
-import org.springframework.stereotype.Component;
-
-import io.agentic.microagent.framework.shared.brain.context.AgentContext;
-import io.agentic.microagent.framework.shared.brain.reasoning.AgentDecision;
-import io.agentic.microagent.framework.shared.brain.planning.ExecutionPlan;
-import io.agentic.microagent.framework.shared.brain.planning.ExecutionStep;
-import io.agentic.microagent.framework.shared.brain.reasoning.Intent;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -32,27 +30,29 @@ public class SimplePlanningEngine implements PlanningEngine {
 
 		// Create a simple single-step plan
 		ExecutionStep step = ExecutionStep.builder()
-			.stepId(UUID.randomUUID().toString())
-			.description("Generate response based on intent")
-			.type(ExecutionStep.StepType.LLM_CALL)
-			.parameters(new HashMap<>())
-			.order(1)
-			.build();
+				.stepId(UUID.randomUUID()
+						.toString())
+				.description("Generate response based on intent")
+				.type(ExecutionStep.StepType.LLM_CALL)
+				.parameters(new HashMap<>())
+				.order(1)
+				.build();
 
 		return ExecutionPlan.builder()
-			.planId(UUID.randomUUID().toString())
-			.steps(java.util.List.of(step))
-			.strategy(strategy)
-			.estimatedComplexity(0.3f)
-			.build();
+				.planId(UUID.randomUUID()
+						.toString())
+				.steps(java.util.List.of(step))
+				.strategy(strategy)
+				.estimatedComplexity(0.3f)
+				.build();
 	}
 
 	private ExecutionPlan.PlanStrategy determineStrategy(AgentDecision decision) {
 		return switch (decision.getType()) {
-			case DIRECT_RESPONSE -> ExecutionPlan.PlanStrategy.DIRECT;
-			case TOOL_EXECUTION -> ExecutionPlan.PlanStrategy.SINGLE_TOOL;
-			case MULTI_STEP_PLAN -> ExecutionPlan.PlanStrategy.SEQUENTIAL;
-			default -> ExecutionPlan.PlanStrategy.DIRECT;
+		case DIRECT_RESPONSE -> ExecutionPlan.PlanStrategy.DIRECT;
+		case TOOL_EXECUTION -> ExecutionPlan.PlanStrategy.SINGLE_TOOL;
+		case MULTI_STEP_PLAN -> ExecutionPlan.PlanStrategy.SEQUENTIAL;
+		default -> ExecutionPlan.PlanStrategy.DIRECT;
 		};
 	}
 

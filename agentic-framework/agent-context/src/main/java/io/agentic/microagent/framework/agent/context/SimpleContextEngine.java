@@ -1,10 +1,10 @@
 package io.agentic.microagent.framework.agent.context;
 
-import java.util.HashMap;
-
-import io.agentic.microagent.framework.shared.brain.context.AgentContext;
-import io.agentic.microagent.framework.shared.brain.AgentRequest;
+import io.agentic.microagent.framework.core.ContextEngine;
+import io.agentic.microagent.framework.core.context.AgentContext;
+import io.agentic.microagent.framework.core.model.AgentRequest;
 import io.agentic.microagent.framework.shared.model.UserProfile;
+import java.util.HashMap;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -22,27 +22,27 @@ public class SimpleContextEngine implements ContextEngine {
 
 	@Override
 	public AgentContext buildContext(AgentRequest request) {
-		log.debug("Building context for user: {} in conversation: {}", request.getUserId(),
-				request.getConversationId());
+		log.debug("Building context for user: {} in conversation: {}", request.getUserId(), request
+				.getConversationId());
 
 		// Build basic user profile
 		UserProfile userProfile = UserProfile.builder()
-			.userId(request.getUserId())
-			.userName(request.getUserId())
-			.permissions(java.util.Set.of("read", "write"))
-			.preferences(new HashMap<>())
-			.metadata(new HashMap<>())
-			.build();
+				.userId(request.getUserId())
+				.userName(request.getUserId())
+				.permissions(java.util.Set.of("read", "write"))
+				.preferences(new HashMap<>())
+				.metadata(new HashMap<>())
+				.build();
 
 		// Build minimal context
 		return AgentContext.builder()
-			.conversationId(request.getConversationId())
-			.userId(request.getUserId())
-			.userProfile(userProfile)
-			.environmentContext(request.getContext() != null ? request.getContext() : new HashMap<>())
-			.domainContext(new HashMap<>())
-			.technicalContext(new HashMap<>())
-			.build();
+				.conversationId(request.getConversationId())
+				.userId(request.getUserId())
+				.userProfile(userProfile)
+				.environmentContext(request.getContext() != null ? request.getContext() : new HashMap<>())
+				.domainContext(new HashMap<>())
+				.technicalContext(new HashMap<>())
+				.build();
 	}
 
 }

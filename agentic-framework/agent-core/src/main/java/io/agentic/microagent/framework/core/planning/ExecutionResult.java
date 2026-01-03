@@ -1,9 +1,8 @@
 package io.agentic.microagent.framework.core.planning;
 
-import java.util.List;
-
 import io.agentic.microagent.framework.shared.model.ErrorInfo;
 import io.agentic.microagent.framework.shared.model.StepResult;
+import java.util.List;
 import lombok.Builder;
 import lombok.Data;
 

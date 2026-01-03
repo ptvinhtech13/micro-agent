@@ -1,8 +1,7 @@
 package io.agentic.microagent.framework.core.brain;
 
-import java.util.List;
-
 import io.agentic.microagent.framework.shared.model.Entity;
+import java.util.List;
 import lombok.Builder;
 import lombok.Data;
 

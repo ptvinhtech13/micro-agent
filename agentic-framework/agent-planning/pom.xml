@@ -16,6 +16,10 @@
     <dependencies>
         <dependency>
             <groupId>io.agentic.microagent.framework</groupId>
+            <artifactId>agent-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.agentic.microagent.framework</groupId>
             <artifactId>agent-shared</artifactId>
         </dependency>
         <dependency>

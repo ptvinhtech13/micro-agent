@@ -3,7 +3,6 @@ package io.agentic.microagent.framework.shared.model;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
-
 import lombok.Builder;
 import lombok.Data;
 

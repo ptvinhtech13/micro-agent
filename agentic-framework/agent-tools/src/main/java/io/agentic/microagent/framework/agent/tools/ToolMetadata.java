@@ -1,7 +1,6 @@
 package io.agentic.microagent.framework.agent.tools;
 
 import java.util.Set;
-
 import lombok.Builder;
 import lombok.Data;
 
@@ -26,7 +25,13 @@ public class ToolMetadata {
 
 	public enum ToolCategory {
 
-		DATABASE, API, FILE_SYSTEM, NOTIFICATION, CALCULATION, MCP_SERVER, CUSTOM
+		DATABASE,
+		API,
+		FILE_SYSTEM,
+		NOTIFICATION,
+		CALCULATION,
+		MCP_SERVER,
+		CUSTOM
 
 	}
 

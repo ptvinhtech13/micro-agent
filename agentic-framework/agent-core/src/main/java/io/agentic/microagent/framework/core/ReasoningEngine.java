@@ -1,9 +1,9 @@
 package io.agentic.microagent.framework.core;
 
-import io.agentic.microagent.framework.core.context.AgentContext;
 import io.agentic.microagent.framework.core.brain.AgentDecision;
-import io.agentic.microagent.framework.core.model.AgentRequest;
 import io.agentic.microagent.framework.core.brain.Intent;
+import io.agentic.microagent.framework.core.context.AgentContext;
+import io.agentic.microagent.framework.core.model.AgentRequest;
 import io.agentic.microagent.framework.shared.model.MemorySnapshot;
 
 /**

@@ -1,8 +1,7 @@
 package io.agentic.microagent.framework.agent.tools;
 
-import java.util.Map;
-
 import io.agentic.microagent.framework.shared.model.ToolResult;
+import java.util.Map;
 
 /**
  * Tool interface - Represents an executable tool

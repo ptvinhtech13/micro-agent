@@ -1,12 +1,11 @@
 package io.agentic.microagent.framework.core.model;
 
-import java.util.List;
-
 import io.agentic.microagent.framework.core.brain.AgentDecision;
 import io.agentic.microagent.framework.core.brain.ReasoningTrace;
 import io.agentic.microagent.framework.shared.model.MemoryUpdate;
 import io.agentic.microagent.framework.shared.model.ResponseMetadata;
 import io.agentic.microagent.framework.shared.model.ToolExecution;
+import java.util.List;
 import lombok.Builder;
 import lombok.Data;
 

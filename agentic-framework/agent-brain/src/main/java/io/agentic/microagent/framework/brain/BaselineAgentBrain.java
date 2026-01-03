@@ -16,13 +16,12 @@ import io.agentic.microagent.framework.core.planning.ExecutionPlan;
 import io.agentic.microagent.framework.core.planning.ExecutionResult;
 import io.agentic.microagent.framework.shared.model.MemorySnapshot;
 import io.agentic.microagent.framework.shared.model.ResponseMetadata;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Default implementation of AgentBrain
@@ -89,8 +88,7 @@ public class BaselineAgentBrain implements AgentBrain {
 			log.info("Request processed successfully for conversation: {}", request.getConversationId());
 			return response;
 
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.error("Error processing request: {}", e.getMessage(), e);
 			return buildErrorResponse(request, e, startTime);
 		}
@@ -105,20 +103,25 @@ public class BaselineAgentBrain implements AgentBrain {
 		Duration latency = Duration.between(startTime, Instant.now());
 
 		return AgentResponse.builder()
-			.conversationId(request.getConversationId())
-			.responseId(UUID.randomUUID().toString())
-			.content(result.getFinalOutput() != null ? result.getFinalOutput().toString() : "")
-			.confidence(decision.getConfidence())
-			.reasoning(buildReasoningTrace(decision))
-			.toolsExecuted(new ArrayList<>()) // TODO: Extract from execution result
-			.memoryUpdates(new ArrayList<>())
-			.decision(decision)
-			.metadata(ResponseMetadata.builder()
-				.latency(latency)
-				.modelUsed("claude-3-5-sonnet-20241022")
-				.executionPath(decision.getType().name())
-				.build())
-			.build();
+				.conversationId(request.getConversationId())
+				.responseId(UUID.randomUUID()
+						.toString())
+				.content(result.getFinalOutput() != null
+						? result.getFinalOutput()
+								.toString()
+						: "")
+				.confidence(decision.getConfidence())
+				.reasoning(buildReasoningTrace(decision))
+				.toolsExecuted(new ArrayList<>()) // TODO: Extract from execution result
+				.memoryUpdates(new ArrayList<>())
+				.decision(decision)
+				.metadata(ResponseMetadata.builder()
+						.latency(latency)
+						.modelUsed("claude-3-5-sonnet-20241022")
+						.executionPath(decision.getType()
+								.name())
+						.build())
+				.build();
 	}
 
 	/**
@@ -126,9 +129,9 @@ public class BaselineAgentBrain implements AgentBrain {
 	 */
 	private ReasoningTrace buildReasoningTrace(AgentDecision decision) {
 		return ReasoningTrace.builder()
-			.steps(new ArrayList<>())
-			.justification(decision.getReasoning())
-			.build();
+				.steps(new ArrayList<>())
+				.justification(decision.getReasoning())
+				.build();
 	}
 
 	/**
@@ -138,18 +141,21 @@ public class BaselineAgentBrain implements AgentBrain {
 		Duration latency = Duration.between(startTime, Instant.now());
 
 		return AgentResponse.builder()
-			.conversationId(request.getConversationId())
-			.responseId(UUID.randomUUID().toString())
-			.content("I apologize, but I encountered an error while processing your request: " + error.getMessage())
-			.confidence(0.0f)
-			.reasoning(ReasoningTrace.builder()
-				.justification("Error occurred during processing")
-				.steps(new ArrayList<>())
-				.build())
-			.toolsExecuted(new ArrayList<>())
-			.memoryUpdates(new ArrayList<>())
-			.metadata(ResponseMetadata.builder().latency(latency).build())
-			.build();
+				.conversationId(request.getConversationId())
+				.responseId(UUID.randomUUID()
+						.toString())
+				.content("I apologize, but I encountered an error while processing your request: " + error.getMessage())
+				.confidence(0.0f)
+				.reasoning(ReasoningTrace.builder()
+						.justification("Error occurred during processing")
+						.steps(new ArrayList<>())
+						.build())
+				.toolsExecuted(new ArrayList<>())
+				.memoryUpdates(new ArrayList<>())
+				.metadata(ResponseMetadata.builder()
+						.latency(latency)
+						.build())
+				.build();
 	}
 
 }

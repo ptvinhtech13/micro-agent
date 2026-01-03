@@ -1,12 +1,12 @@
 package io.agentic.microagent.framework.agent.task;
 
+import io.agentic.microagent.framework.core.ExecutionEngine;
+import io.agentic.microagent.framework.core.context.AgentContext;
+import io.agentic.microagent.framework.core.planning.ExecutionPlan;
+import io.agentic.microagent.framework.core.planning.ExecutionResult;
+import io.agentic.microagent.framework.shared.model.StepResult;
 import java.util.ArrayList;
 import java.util.UUID;
-
-import io.agentic.microagent.framework.shared.brain.context.AgentContext;
-import io.agentic.microagent.framework.shared.brain.planning.ExecutionPlan;
-import io.agentic.microagent.framework.shared.brain.planning.ExecutionResult;
-import io.agentic.microagent.framework.shared.model.StepResult;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -24,7 +24,8 @@ public class SimpleExecutionEngine implements ExecutionEngine {
 
 	@Override
 	public ExecutionResult execute(ExecutionPlan plan, AgentContext context) {
-		log.debug("Executing plan: {} with {} steps", plan.getPlanId(), plan.getSteps().size());
+		log.debug("Executing plan: {} with {} steps", plan.getPlanId(), plan.getSteps()
+				.size());
 
 		// Execute each step sequentially (for now)
 		var stepResults = new ArrayList<StepResult>();
@@ -34,21 +35,22 @@ public class SimpleExecutionEngine implements ExecutionEngine {
 
 			// Stub execution - just return success
 			StepResult stepResult = StepResult.builder()
-				.stepId(step.getStepId())
-				.success(true)
-				.output("Step completed successfully (stub)")
-				.build();
+					.stepId(step.getStepId())
+					.success(true)
+					.output("Step completed successfully (stub)")
+					.build();
 
 			stepResults.add(stepResult);
 		}
 
 		// Build final result
 		return ExecutionResult.builder()
-			.executionId(UUID.randomUUID().toString())
-			.success(true)
-			.stepResults(stepResults)
-			.finalOutput("Response generated based on execution plan (stub implementation)")
-			.build();
+				.executionId(UUID.randomUUID()
+						.toString())
+				.success(true)
+				.stepResults(stepResults)
+				.finalOutput("Response generated based on execution plan (stub implementation)")
+				.build();
 	}
 
 }

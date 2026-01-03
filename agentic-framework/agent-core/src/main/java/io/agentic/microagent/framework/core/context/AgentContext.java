@@ -1,8 +1,7 @@
 package io.agentic.microagent.framework.core.context;
 
-import java.util.Map;
-
 import io.agentic.microagent.framework.shared.model.UserProfile;
+import java.util.Map;
 import lombok.Builder;
 import lombok.Data;
 
