@@ -102,6 +102,21 @@
                 <artifactId>agent-tools</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.framework</groupId>
+                <artifactId>agent-planning</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.framework</groupId>
+                <artifactId>agent-reasoning</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.framework</groupId>
+                <artifactId>agent-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!-- MapStruct -->
             <dependency>

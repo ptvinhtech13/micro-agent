@@ -7,7 +7,7 @@
 - Add Javadoc for public APIs
 
 ## Architecture Patterns
-- Follow the layered architecture defined in `/docs/architecture/high_level_java_design.md`
+- Follow the layered architecture defined in [agent_architecture_diagram.md](../docs/architecture/agent_architecture_diagram.md)
 - Core layers: Orchestration, Context & Memory, Task Management, Tool & MCP, Communication, Predefined Flow
 - Use Spring dependency injection for all components
 - Separate concerns: AgentBrain (orchestrator), Services (business logic), Tools (execution)

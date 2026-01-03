@@ -8,10 +8,10 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>agent-brain</artifactId>
+    <artifactId>agent-planning</artifactId>
 
-    <name>Agent Brain</name>
-    <description>Core classes for Agent Brain implementation</description>
+    <name>Agent Planning</name>
+    <description>Core classes for Agent Planning implementation</description>
 
     <dependencies>
         <dependency>
@@ -22,14 +22,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>io.agentic.microagent.framework</groupId>
-            <artifactId>agent-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
         </dependency>
     </dependencies>
 </project>
