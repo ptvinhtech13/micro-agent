@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0          https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.5.9</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
 
     <groupId>io.agentic.microagent</groupId>
@@ -20,41 +17,37 @@
     <name>MicroAgent Parent</name>
     <description>Parent POM for MicroAgent multi-module project</description>
 
-    <properties>
-        <java.version>21</java.version>
-        <spring-ai.version>1.1.2</spring-ai.version>
-        <mapstruct.version>1.5.5.Final</mapstruct.version>
-        <lombok.version>1.18.30</lombok.version>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <modules>
-        <module>agentic-framework</module>
-        <module>agentic-shared</module>
-        <module>agentic-core</module>
-        <module>agentic-data-access</module>
         <module>agentic-api</module>
         <module>agentic-app</module>
+        <module>agentic-core</module>
+        <module>agentic-data-access</module>
+        <module>agentic-framework</module>
+        <module>agentic-shared</module>
         <module>agentic-test</module>
     </modules>
 
+    <properties>
+        <java.version>21</java.version>
+        <lombok.version>1.18.30</lombok.version>
+        <mapstruct.version>1.5.5.Final</mapstruct.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spotless-maven-plugin.version>3.1.0</spotless-maven-plugin.version>
+        <spring-ai.version>1.1.2</spring-ai.version>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
-            <!-- Spring AI BOM -->
-            <dependency>
-                <groupId>org.springframework.ai</groupId>
-                <artifactId>spring-ai-bom</artifactId>
-                <version>${spring-ai.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <!-- Internal Modules -->
             <dependency>
                 <groupId>io.agentic.microagent</groupId>
-                <artifactId>agentic-shared</artifactId>
+                <artifactId>agentic-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent</groupId>
+                <artifactId>agentic-app</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -67,19 +60,11 @@
                 <artifactId>agentic-data-access</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
+            <!-- Internal Modules -->
             <dependency>
                 <groupId>io.agentic.microagent</groupId>
-                <artifactId>agentic-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.agentic.microagent</groupId>
-                <artifactId>agentic-app</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.agentic.microagent.framework</groupId>
-                <artifactId>agent-shared</artifactId>
+                <artifactId>agentic-shared</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -94,17 +79,17 @@
             </dependency>
             <dependency>
                 <groupId>io.agentic.microagent.framework</groupId>
+                <artifactId>agent-engage</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.framework</groupId>
                 <artifactId>agent-memory</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.agentic.microagent.framework</groupId>
-                <artifactId>agent-tools</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.agentic.microagent.framework</groupId>
-                <artifactId>agent-engage</artifactId>
+                <artifactId>agent-shared</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -112,12 +97,10 @@
                 <artifactId>agent-task</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
-            <!-- Lombok -->
             <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>${lombok.version}</version>
+                <groupId>io.agentic.microagent.framework</groupId>
+                <artifactId>agent-tools</artifactId>
+                <version>${project.version}</version>
             </dependency>
 
             <!-- MapStruct -->
@@ -131,12 +114,98 @@
                 <artifactId>mapstruct-processor</artifactId>
                 <version>${mapstruct.version}</version>
             </dependency>
+
+            <!-- Lombok -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+            <!-- Spring AI BOM -->
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-bom</artifactId>
+                <version>${spring-ai.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>com.diffplug.spotless</groupId>
+                    <artifactId>spotless-maven-plugin</artifactId>
+                    <version>${spotless-maven-plugin.version}</version>
+                    <configuration>
+                        <pom>
+                            <includes>
+                                <include>pom.xml</include>
+                            </includes>
+                            <sortPom>
+                                <expandEmptyElements>false</expandEmptyElements>
+                                <nrOfIndentSpace>4</nrOfIndentSpace>
+                                <sortModules>true</sortModules>
+                                <sortDependencies>groupId,artifactId,scope</sortDependencies>
+                                <sortDependencyManagement>groupId,artifactId,scope</sortDependencyManagement>
+                                <sortDependencyExclusions>groupId,artifactId</sortDependencyExclusions>
+                                <sortPlugins>groupId,artifactId</sortPlugins>
+                                <sortProperties>true</sortProperties>
+                                <sortModules>true</sortModules>
+                                <sortExecutions>true</sortExecutions>
+                            </sortPom>
+                            <lineEndings>UNIX</lineEndings>
+                        </pom>
+                        <java>
+                            <includes>
+                                <include>src/main/java/**/*.java</include>
+                                <include>src/test/java/**/*.java</include>
+                            </includes>
+                            <eclipse>
+                                <file>eclipse-formatter.xml</file>
+                            </eclipse>
+                            <importOrder/>
+                            <removeUnusedImports/>
+                            <replaceRegex>
+                                <name>Remove wildcard imports</name>
+                                <searchRegex>import\s+[^\*\s]+\*;(\r\n|\r|\n)</searchRegex>
+                                <replacement>$1</replacement>
+                            </replaceRegex>
+                            <lineEndings>UNIX</lineEndings>
+                        </java>
+                        <sql>
+                            <includes>
+                                <include>src/main/resources/**/*.sql</include>
+                            </includes>
+                            <dbeaver/>
+                            <lineEndings>UNIX</lineEndings>
+                        </sql>
+                        <json>
+                            <includes>
+                                <!-- You have to set the target manually -->
+                                <include>*.json</include>
+                            </includes>
+                            <gson>
+                                <indentSpaces>4</indentSpaces>
+                                <sortByKeys>false</sortByKeys>
+                            </gson>
+                        </json>
+                        <upToDateChecking>
+                            <enabled>true</enabled>
+                            <indexFile>${project.basedir}/.spotless-index</indexFile>
+                        </upToDateChecking>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>check</goal>
+                                <goal>apply</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>

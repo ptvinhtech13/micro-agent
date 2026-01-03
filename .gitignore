@@ -44,3 +44,5 @@ docker-compose/infra/volumes/*
 
 ### Backup files ###
 *.backup
+
+*.spotless-index
