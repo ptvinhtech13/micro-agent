@@ -1,0 +1,18 @@
+version: '3.8'
+
+# Common configuration for all docker-compose files
+# This file contains shared service configurations
+
+x-common-logging: &common-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+x-common-networks: &common-networks
+  networks:
+    - microagent-network
+
+networks:
+  microagent-network:
+    driver: bridge

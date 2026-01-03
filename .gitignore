@@ -31,3 +31,16 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Docker Volumes ###
+docker-compose/infra/volumes/postgres/
+docker-compose/infra/volumes/redis/
+docker-compose/infra/volumes/*
+!docker-compose/infra/volumes/.gitkeep
+
+### Maven Multi-Module ###
+**/target/
+
+
+### Backup files ###
+*.backup

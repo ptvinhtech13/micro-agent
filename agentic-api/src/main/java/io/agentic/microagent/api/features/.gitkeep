@@ -1,0 +1,5 @@
+# API features following CQRS pattern
+# Each feature should have:
+# - /feature-name/
+#   - /mapper (API DTO to Core Command/Query)
+#   - FeatureNameController.java (REST or WebSocket)

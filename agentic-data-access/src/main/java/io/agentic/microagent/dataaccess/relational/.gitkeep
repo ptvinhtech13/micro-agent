@@ -1,0 +1,8 @@
+# Relational database access
+# Structure per feature:
+# - /feature-name/
+#   - /entities (JPA/Hibernate entities)
+#   - /mapper (JPA Entity to Core Entity)
+#   - /repository (JPA repositories)
+#   - FeatureNameRepositoryImpl.java
+# - RelationalDatabaseAccessConfig.java

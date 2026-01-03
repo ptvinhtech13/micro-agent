@@ -1,0 +1,2 @@
+# Integration tests with TestContainers
+# Use @SpringBootTest with TestContainers for infrastructure setup
