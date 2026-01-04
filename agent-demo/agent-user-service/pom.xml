@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.agentic.microagent</groupId>
+        <artifactId>microagent-parent</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+
+    <groupId>io.agentic.microagent.user</groupId>
+    <artifactId>agent-user-service</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>Agent User Service</name>
+    <description>User Management Specialist Agent - Handles user operations and management</description>
+
+    <modules>
+        <module>user-api</module>
+        <module>user-app</module>
+        <module>user-core</module>
+        <module>user-data-access</module>
+        <module>user-shared</module>
+        <module>user-test</module>
+    </modules>
+</project>

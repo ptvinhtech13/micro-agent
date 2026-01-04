@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.agentic.microagent</groupId>
+        <artifactId>microagent-parent</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+
+    <groupId>io.agentic.microagent.brain</groupId>
+    <artifactId>agent-brain-service</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>Agent Brain Service</name>
+    <description>Agent Brain Orchestrator - Plans, coordinates, and executes tasks across specialized agents</description>
+
+    <modules>
+        <module>brain-api</module>
+        <module>brain-app</module>
+        <module>brain-core</module>
+        <module>brain-data-access</module>
+        <module>brain-shared</module>
+        <module>brain-test</module>
+    </modules>
+</project>
