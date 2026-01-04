@@ -37,6 +37,111 @@
 └───────────────────────────────────────────────────────────────────┘
 ```
 
+## 1.1 AGENT REGISTRY ARCHITECTURE
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                          AGENT REGISTRY SYSTEM                          │
+│  (Central Catalog for Multi-Agent Management & Routing)                 │
+│                                                                          │
+│  ┌────────────────────────────────────────────────────────────────────┐│
+│  │                       Agent Registry                                ││
+│  │  ┌──────────────────────────────────────────────────────────────┐  ││
+│  │  │  Agent Catalog                                               │  ││
+│  │  │                                                               │  ││
+│  │  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │  ││
+│  │  │  │  Banking     │  │ Healthcare   │  │   General    │      │  ││
+│  │  │  │  Agent       │  │  Agent       │  │   Agent      │ ...  │  ││
+│  │  │  │  Profile     │  │  Profile     │  │   Profile    │      │  ││
+│  │  │  └──────────────┘  └──────────────┘  └──────────────┘      │  ││
+│  │  │                                                               │  ││
+│  │  │  Each AgentProfile contains:                                 │  ││
+│  │  │  • agentId, name, version, status                            │  ││
+│  │  │  • domain, capabilities, type                                │  ││
+│  │  │  • configuration (tools, model, limits)                      │  ││
+│  │  │  • metadata (metrics, health, usage)                         │  ││
+│  │  └──────────────────────────────────────────────────────────────┘  ││
+│  │                                                                      ││
+│  │  Operations:                                                         ││
+│  │  • register(AgentProfile) → Register new agent                      ││
+│  │  • selectAgent(request) → Route to appropriate agent                ││
+│  │  • findAgentsByDomain(domain) → Discover agents                     ││
+│  │  • findAgentsByCapability(capability) → Capability-based search     ││
+│  │  • enableAgent / disableAgent → Lifecycle management                ││
+│  │  • updateHealth → Monitor agent health                              ││
+│  │  • recordMetrics → Track usage and performance                      ││
+│  └────────────────────────────────────────────────────────────────────┘│
+│                                                                          │
+│  Request Flow with Agent Registry:                                      │
+│                                                                          │
+│  1. User Request → Communication Layer                                  │
+│  2. AgentRegistry.selectAgent(request) → AgentProfile                   │
+│  3. AgentBrainFactory.create(agentProfile) → AgentBrain                 │
+│  4. AgentBrain.process(request) → AgentResponse                         │
+│  5. AgentRegistry.recordMetrics(agentId, metrics)                       │
+│  6. Response to User                                                    │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+### Agent Profile Structure
+
+```
+AgentProfile
+├── agentId: String                    # Unique identifier
+├── name: String                       # Display name
+├── description: String                # Agent description
+├── version: String                    # Version (e.g., "1.0.0")
+├── status: AgentStatus               # ACTIVE, INACTIVE, MAINTENANCE, DEPRECATED
+│
+├── Classification
+│   ├── domain: String                # Primary domain (banking, healthcare, general)
+│   ├── subDomains: Set<String>       # Secondary domains
+│   ├── capabilities: Set<Capability>  # What can this agent do?
+│   └── type: AgentType               # GENERALIST, SPECIALIST, COORDINATOR
+│
+├── Configuration
+│   ├── agentConfiguration: AgentConfiguration
+│   │   ├── priority: Integer         # Routing priority
+│   │   ├── maxConcurrentRequests: Integer
+│   │   ├── requestTimeout: Duration
+│   │   ├── minConfidenceThreshold: Float
+│   │   ├── allowedUserRoles: Set<String>
+│   │   ├── memoryConfig: MemoryConfiguration
+│   │   ├── executionConfig: ExecutionConfiguration
+│   │   └── customSettings: Map<String, Object>
+│   │
+│   ├── toolConfigurations: List<ToolConfiguration>
+│   │   ├── toolId: String
+│   │   ├── enabled: Boolean
+│   │   ├── priority: Integer
+│   │   ├── defaultParameters: Map
+│   │   └── timeout: Duration
+│   │
+│   └── modelConfig: ModelConfiguration
+│       ├── modelProvider: String     # anthropic, openai, etc.
+│       ├── modelId: String           # claude-3-opus, gpt-4, etc.
+│       ├── temperature: Float
+│       ├── maxTokens: Integer
+│       └── additionalParams: Map
+│
+├── Metadata
+│   ├── totalRequestsHandled: Long
+│   ├── successRate: Float
+│   ├── averageResponseTime: Duration
+│   ├── totalTokensUsed: Long
+│   ├── health: AgentHealth           # HEALTHY, DEGRADED, UNHEALTHY
+│   ├── lastHealthCheck: Instant
+│   ├── lastUsedAt: Instant
+│   ├── activeConversations: Integer
+│   └── tags: Set<String>
+│
+└── Lifecycle
+    ├── createdAt: Instant
+    ├── updatedAt: Instant
+    ├── createdBy: String
+    └── updatedBy: String
+```
+
 ## 2. CORE DATA STRUCTURES
 
 ### 2.1 Agent Request (Input)
