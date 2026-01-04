@@ -84,6 +84,9 @@ Restructure the current project to support multiple modules for better organizat
    /agent-shared -- Shared module for Agent Framework containing common utilities, constants, and models used across other Agent Framework modules.
    /agent-tools -- Contains classes for integrating and managing external tools for agents.
    /agent-task -- Contains classes for agent task management and execution.
-/agent-registry-service -- This is seperated module. Service Registry module for service discovery and registration. Package name: io.agentic.microagent.registry
+/agent-registry-service -- This is seperated module. Service Registry module for Agent discovery and registration. Package name: io.agentic.microagent.registry
     <<YOU MUST FOLLOW THE SAME BASE MICROSERVICE STRUCTURE AS DESCRIBED ABOVE FOR MICROSERVICE MODULES with api, app, core, data-access, shared, test modules and service name is "registry">>   
+/agent-demo -- This is seperated module. Agent demostration. Package name: io.agentic.microagent.demo
+    <<YOU MUST FOLLOW THE SAME BASE MICROSERVICE STRUCTURE AS DESCRIBED ABOVE FOR MICROSERVICE MODULES with api, app, core, data-access, shared, test modules and service name is "demo">>   
+
 ```
