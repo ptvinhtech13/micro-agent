@@ -101,10 +101,6 @@ The **Agent Policy Governance System** provides a unified, flexible framework fo
 │  │       → Log violation for manual review                              │ │
 │  │       → Return original response (non-blocking)                      │ │
 │  │                                                                      │ │
-│  │     LOG:                                                             │ │
-│  │       → Just log for analytics/tracking                              │ │
-│  │       → Return original response unchanged                           │ │
-│  │                                                                      │ │
 │  │  3. Record Audit Trail                                              │ │
 │  │     - Log policy checks performed                                   │ │
 │  │     - Record any violations                                         │ │
@@ -221,21 +217,20 @@ public class PolicyRule {
     private List<String> keywords;                // Keywords to detect
 
     // What to do when violation detected
-    private EnforcementAction enforcementAction;   // BLOCK, REDACT, WARN, LOG
+    private EnforcementAction enforcementAction;   // BLOCK, REDACT, WARN
 }
 
 public enum EnforcementAction {
     BLOCK,       // Block request/response completely - return safe fallback
     REDACT,      // Remove violating content, return sanitized response
-    WARN,        // Log violation, return original response
-    LOG          // Just log, no visible action
+    WARN         // Log violation, return original response
 }
 ```
 
 **How enforcement works:**
-- Rule defines WHAT to do: `enforcementAction` (BLOCK, REDACT, WARN, LOG)
+- Rule defines WHAT to do: `enforcementAction` (BLOCK, REDACT, WARN)
 - The enforcement action is always applied as defined
-- All violations are logged to the audit trail
+- **All violations are automatically logged to the audit trail regardless of action**
 
 ### POST_RESPONSE Remediation Strategy
 
@@ -278,27 +273,17 @@ AgentResponse original = "... response content ...";
 // Result: Original response returned, violation logged for review
 ```
 
-#### LOG
-```java
-// Agent response triggers tracking rule
-AgentResponse original = "... response content ...";
-
-// POST_RESPONSE logs for analytics → LOG
-// Result: Original response returned unchanged, event logged
-```
-
 ### Enforcement Actions Summary
 
 All enforcement actions are applied as defined in the policy rules:
 
 | Rule Action | Behavior | Result |
 |-------------|----------|--------|
-| **BLOCK**   | Block request/response | User receives error message, violation logged |
-| **REDACT**  | Remove violating content | User receives sanitized response, violation logged |
-| **WARN**    | Log warning | User receives original response, violation logged |
-| **LOG**     | Track only | User receives original response, event logged |
+| **BLOCK**   | Block request/response | User receives error message, violation logged to audit trail |
+| **REDACT**  | Remove violating content | User receives sanitized response, violation logged to audit trail |
+| **WARN**    | Log warning | User receives original response, violation logged to audit trail |
 
-**All violations are logged to the audit trail for compliance and monitoring.**
+**All violations are automatically logged to the audit trail for compliance and monitoring.**
 
 ### 4. EnforcementConfig (Enforcement Behavior)
 
@@ -324,8 +309,7 @@ public enum EnforcementPhase {
 - BLOCK → blocks request/response completely
 - REDACT → removes violating content from response
 - WARN → logs warning and allows response
-- LOG → logs event only for analytics
-- All violations are logged to the audit trail
+- **All violations are automatically logged to the audit trail**
 
 ### 5. PolicyStatus (System-Managed Lifecycle)
 
@@ -531,7 +515,8 @@ public interface PolicyEnforcementEngine {
 
     /**
      * Apply remediation to policy violations
-     * Handles BLOCK, REDACT, WARN, LOG actions based on rule definitions
+     * Handles BLOCK, REDACT, WARN actions based on rule definitions
+     * All violations are automatically logged to audit trail
      */
     AgentResponse applyRemediation(
         AgentResponse response,
