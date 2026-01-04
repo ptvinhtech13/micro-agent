@@ -245,6 +245,107 @@ Each Microservice is a **separate Spring Boot Application** organized into 6 mod
 │       ├── pom.xml
 │       └── src/test/java/io/agentic/microagent/registry/test/
 │
+├── /agent-policy-service                           # Policy Management Service (Microservice)
+│   ├── pom.xml                                     # Parent POM for policy
+│   ├── /policy-api                                 # ✅ API Layer
+│   │   ├── pom.xml
+│   │   └── src/main/java/io/agentic/microagent/policy/api/features/
+│   │       ├── policy-management/
+│   │       │   ├── mapper/
+│   │       │   └── PolicyManagementController.java
+│   │       ├── policy-enforcement/
+│   │       │   ├── mapper/
+│   │       │   └── PolicyEnforcementController.java
+│   │       └── tag-management/
+│   │           ├── mapper/
+│   │           └── TagManagementController.java
+│   ├── /policy-app                                 # ✅ Application Entry
+│   │   ├── pom.xml
+│   │   ├── src/main/java/io/agentic/microagent/policy/app/
+│   │   │   └── PolicyServiceApplication.java
+│   │   └── src/main/resources/
+│   │       └── application.yml
+│   ├── /policy-core                                # ✅ Business Logic (CQRS)
+│   │   ├── pom.xml
+│   │   └── src/main/java/io/agentic/microagent/policy/core/features/
+│   │       ├── policy-management/
+│   │       │   ├── constants/
+│   │       │   ├── entities/                       # Policy, PolicyContent, PolicyRule
+│   │       │   ├── mapper/
+│   │       │   ├── request/                        # CreatePolicyCommand, UpdatePolicyCommand
+│   │       │   ├── service/
+│   │       │   ├── utils/
+│   │       │   ├── PolicyManagementCommandService.java
+│   │       │   ├── PolicyManagementQueryService.java
+│   │       │   └── PolicyRepository.java
+│   │       ├── policy-enforcement/
+│   │       │   ├── constants/
+│   │       │   ├── entities/                       # PolicyValidationResult, PolicyViolation
+│   │       │   ├── mapper/
+│   │       │   ├── request/                        # ValidatePolicyCommand, EnforcePolicyCommand
+│   │       │   ├── service/
+│   │       │   ├── utils/
+│   │       │   ├── PolicyEnforcementService.java
+│   │       │   └── PolicyEnforcementEngine.java
+│   │       └── tag-management/
+│   │           ├── constants/
+│   │           ├── entities/                       # Tag
+│   │           ├── mapper/
+│   │           ├── request/                        # CreateTagCommand, AssignTagCommand
+│   │           ├── service/
+│   │           ├── utils/
+│   │           ├── TagManagementCommandService.java
+│   │           ├── TagManagementQueryService.java
+│   │           └── TagRepository.java
+│   ├── /policy-data-access                         # ✅ Data Access Layer
+│   │   ├── pom.xml
+│   │   └── src/main/java/io/agentic/microagent/policy/dataaccess/
+│   │       ├── relational/
+│   │       │   ├── policy-management/
+│   │       │   │   ├── entities/                   # PolicyJpaEntity
+│   │       │   │   ├── mapper/
+│   │       │   │   ├── repository/
+│   │       │   │   │   └── PolicyJpaRepository.java
+│   │       │   │   └── PolicyRepositoryImpl.java
+│   │       │   ├── tag-management/
+│   │       │   │   ├── entities/                   # TagJpaEntity
+│   │       │   │   ├── mapper/
+│   │       │   │   ├── repository/
+│   │       │   │   │   └── TagJpaRepository.java
+│   │       │   │   └── TagRepositoryImpl.java
+│   │       │   ├── violation-tracking/
+│   │       │   │   ├── entities/                   # PolicyViolationJpaEntity
+│   │       │   │   ├── mapper/
+│   │       │   │   ├── repository/
+│   │       │   │   │   └── PolicyViolationJpaRepository.java
+│   │       │   │   └── ViolationTrackingRepositoryImpl.java
+│   │       │   └── RelationalDatabaseAccessConfig.java
+│   │       └── other-data-source-access/
+│   ├── /policy-shared                              # ✅ Shared Components
+│   │   ├── pom.xml
+│   │   └── src/main/java/io/agentic/microagent/policy/shared/
+│   │       ├── constants/
+│   │       ├── enums/                              # PolicyStatus, EnforcementAction, EnforcementPhase
+│   │       ├── exceptions/
+│   │       ├── utils/
+│   │       └── http/
+│   │           ├── apis/
+│   │           └── features/
+│   │               ├── policy-management/
+│   │               │   ├── request/
+│   │               │   │   └── CreatePolicyRequest.java
+│   │               │   └── response/
+│   │               │       └── PolicyResponse.java
+│   │               ├── policy-enforcement/
+│   │               │   ├── request/
+│   │               │   └── response/
+│   │               └── tag-management/
+│   │                   ├── request/
+│   │                   └── response/
+│   └── /policy-test                                # ✅ Integration Tests
+│       ├── pom.xml
+│       └── src/test/java/io/agentic/microagent/policy/test/
+│
 └── /agent-demo                                     # Demo Service (Microservice)
     ├── pom.xml                                     # Parent POM for demo
     ├── /demo-api                                   # ✅ API Layer
@@ -375,6 +476,7 @@ public record CreateAgentRegistrationRequest(String name, String capabilities) {
 | Microservice           | Service Name | Module Prefix |
 |------------------------|--------------|---------------|
 | agent-registry-service | `registry`   | `registry-*`  |
+| agent-policy-service   | `policy`     | `policy-*`    |
 | agent-demo             | `demo`       | `demo-*`      |
 | agent-{future}         | `{future}`   | `{future}-*`  |
 

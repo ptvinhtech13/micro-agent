@@ -18,9 +18,10 @@
     <description>Parent POM for MicroAgent multi-module project</description>
 
     <modules>
-        <module>agent-demo</module>
-        <module>agent-registry-service</module>
         <module>agentic-framework</module>
+        <module>agent-registry-service</module>
+        <module>agent-policy-service</module>
+        <module>agent-demo</module>
     </modules>
 
     <properties>
@@ -129,6 +130,28 @@
             <dependency>
                 <groupId>io.agentic.microagent.registry</groupId>
                 <artifactId>registry-shared</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Agent Policy Service Modules -->
+            <dependency>
+                <groupId>io.agentic.microagent.policy</groupId>
+                <artifactId>policy-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.policy</groupId>
+                <artifactId>policy-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.policy</groupId>
+                <artifactId>policy-data-access</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.policy</groupId>
+                <artifactId>policy-shared</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
