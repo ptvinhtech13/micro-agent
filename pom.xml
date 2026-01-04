@@ -18,13 +18,9 @@
     <description>Parent POM for MicroAgent multi-module project</description>
 
     <modules>
-        <module>agentic-api</module>
-        <module>agentic-app</module>
-        <module>agentic-core</module>
-        <module>agentic-data-access</module>
         <module>agentic-framework</module>
-        <module>agentic-shared</module>
-        <module>agentic-test</module>
+        <module>agent-registry-service</module>
+        <module>agent-demo</module>
     </modules>
 
     <properties>
@@ -40,33 +36,7 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>io.agentic.microagent</groupId>
-                <artifactId>agentic-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.agentic.microagent</groupId>
-                <artifactId>agentic-app</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.agentic.microagent</groupId>
-                <artifactId>agentic-core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.agentic.microagent</groupId>
-                <artifactId>agentic-data-access</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <!-- Internal Modules -->
-            <dependency>
-                <groupId>io.agentic.microagent</groupId>
-                <artifactId>agentic-shared</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+            <!-- Agentic Framework Modules -->
             <dependency>
                 <groupId>io.agentic.microagent.framework</groupId>
                 <artifactId>agent-brain</artifactId>
@@ -115,6 +85,50 @@
             <dependency>
                 <groupId>io.agentic.microagent.framework</groupId>
                 <artifactId>agent-tools</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Agent Registry Service Modules -->
+            <dependency>
+                <groupId>io.agentic.microagent.registry</groupId>
+                <artifactId>registry-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.registry</groupId>
+                <artifactId>registry-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.registry</groupId>
+                <artifactId>registry-data-access</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.registry</groupId>
+                <artifactId>registry-shared</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Agent Demo Service Modules -->
+            <dependency>
+                <groupId>io.agentic.microagent.demo</groupId>
+                <artifactId>demo-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.demo</groupId>
+                <artifactId>demo-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.demo</groupId>
+                <artifactId>demo-data-access</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.demo</groupId>
+                <artifactId>demo-shared</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

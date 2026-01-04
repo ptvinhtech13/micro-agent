@@ -81,6 +81,7 @@ Restructure the current project to support multiple modules for better organizat
    /agent-engage -- Contains classes for agent engagement and interaction handling.
    /agent-memory -- Contains classes for agent memory management.
    /agent-planning -- Contains classes for agent planning and decision-making, task decomposition
+   /agent-reasoning -- Contains classes for agent reasoning and problem-solving.
    /agent-shared -- Shared module for Agent Framework containing common utilities, constants, and models used across other Agent Framework modules.
    /agent-tools -- Contains classes for integrating and managing external tools for agents.
    /agent-task -- Contains classes for agent task management and execution.

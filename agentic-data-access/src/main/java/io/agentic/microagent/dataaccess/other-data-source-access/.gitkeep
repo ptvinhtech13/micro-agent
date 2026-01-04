@@ -1,8 +1,0 @@
-# Other data source access (Redis, MongoDB, etc.)
-# Structure per feature:
-# - /feature-name/
-#   - /entities (Domain entities for this data source)
-#   - /mapper (Domain Entity to Core Entity)
-#   - /repository (Repository implementations)
-#   - FeatureNameRepositoryImpl.java
-# - OtherDataSourceAccessConfig.java
