@@ -18,11 +18,12 @@
     <description>Parent POM for MicroAgent multi-module project</description>
 
     <modules>
-        <module>agentic-framework</module>
         <module>agent-brain</module>
-        <module>agent-registry-service</module>
-        <module>agent-policy-service</module>
+        <module>agent-common</module>
         <module>agent-demo</module>
+        <module>agent-policy-service</module>
+        <module>agent-registry-service</module>
+        <module>agentic-framework</module>
     </modules>
 
     <properties>
@@ -61,70 +62,25 @@
                 <version>${project.version}</version>
             </dependency>
 
-            <!-- Agent Demo - Specialist Agent Services (under agent-demo/) -->
-            <!-- Agent Order Service Modules (agent-demo/agent-order-service) -->
+            <!-- Common Modules - Shared utilities across all microservices -->
             <dependency>
-                <groupId>io.agentic.microagent.order</groupId>
-                <artifactId>order-api</artifactId>
+                <groupId>io.agentic.microagent.common</groupId>
+                <artifactId>common-constant</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.agentic.microagent.order</groupId>
-                <artifactId>order-core</artifactId>
+                <groupId>io.agentic.microagent.common</groupId>
+                <artifactId>common-data-access</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.agentic.microagent.order</groupId>
-                <artifactId>order-data-access</artifactId>
+                <groupId>io.agentic.microagent.common</groupId>
+                <artifactId>common-mapstruct</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.agentic.microagent.order</groupId>
-                <artifactId>order-shared</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <!-- Agent Payment Service Modules (agent-demo/agent-payment-service) -->
-            <dependency>
-                <groupId>io.agentic.microagent.payment</groupId>
-                <artifactId>payment-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.agentic.microagent.payment</groupId>
-                <artifactId>payment-core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.agentic.microagent.payment</groupId>
-                <artifactId>payment-data-access</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.agentic.microagent.payment</groupId>
-                <artifactId>payment-shared</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <!-- Agent User Service Modules (agent-demo/agent-user-service) -->
-            <dependency>
-                <groupId>io.agentic.microagent.user</groupId>
-                <artifactId>user-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.agentic.microagent.user</groupId>
-                <artifactId>user-core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.agentic.microagent.user</groupId>
-                <artifactId>user-data-access</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.agentic.microagent.user</groupId>
-                <artifactId>user-shared</artifactId>
+                <groupId>io.agentic.microagent.common</groupId>
+                <artifactId>common-validator</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -180,25 +136,48 @@
                 <version>${project.version}</version>
             </dependency>
 
-            <!-- Agent Registry Service Modules -->
+            <!-- Agent Demo - Specialist Agent Services (under agent-demo/) -->
+            <!-- Agent Order Service Modules (agent-demo/agent-order-service) -->
             <dependency>
-                <groupId>io.agentic.microagent.registry</groupId>
-                <artifactId>registry-api</artifactId>
+                <groupId>io.agentic.microagent.order</groupId>
+                <artifactId>order-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.agentic.microagent.registry</groupId>
-                <artifactId>registry-core</artifactId>
+                <groupId>io.agentic.microagent.order</groupId>
+                <artifactId>order-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.agentic.microagent.registry</groupId>
-                <artifactId>registry-data-access</artifactId>
+                <groupId>io.agentic.microagent.order</groupId>
+                <artifactId>order-data-access</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.agentic.microagent.registry</groupId>
-                <artifactId>registry-shared</artifactId>
+                <groupId>io.agentic.microagent.order</groupId>
+                <artifactId>order-shared</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Agent Payment Service Modules (agent-demo/agent-payment-service) -->
+            <dependency>
+                <groupId>io.agentic.microagent.payment</groupId>
+                <artifactId>payment-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.payment</groupId>
+                <artifactId>payment-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.payment</groupId>
+                <artifactId>payment-data-access</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.payment</groupId>
+                <artifactId>payment-shared</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -221,6 +200,50 @@
             <dependency>
                 <groupId>io.agentic.microagent.policy</groupId>
                 <artifactId>policy-shared</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Agent Registry Service Modules -->
+            <dependency>
+                <groupId>io.agentic.microagent.registry</groupId>
+                <artifactId>registry-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.registry</groupId>
+                <artifactId>registry-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.registry</groupId>
+                <artifactId>registry-data-access</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.registry</groupId>
+                <artifactId>registry-shared</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Agent User Service Modules (agent-demo/agent-user-service) -->
+            <dependency>
+                <groupId>io.agentic.microagent.user</groupId>
+                <artifactId>user-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.user</groupId>
+                <artifactId>user-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.user</groupId>
+                <artifactId>user-data-access</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.user</groupId>
+                <artifactId>user-shared</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

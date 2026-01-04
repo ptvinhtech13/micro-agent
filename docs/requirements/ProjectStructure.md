@@ -36,7 +36,7 @@ Each Microservice is a **separate Spring Boot Application** organized into 6 mod
 /service-name-api
 └── src/main/java/io/agentic/microagent/api
     └── features                                    # Package-by-Feature
-        └── feature-name                            # e.g., "agent-registration"
+        └── featurename                            # e.g., "agentregistration"
             ├── mapper/                             # MapStruct mappers (DTO ↔ Command/Query)
             │   └── FeatureNameApiMapper.java
             └── FeatureNameController.java          # REST or WebSocket Controller
@@ -66,7 +66,7 @@ Each Microservice is a **separate Spring Boot Application** organized into 6 mod
 /service-name-core
 └── src/main/java/io/agentic/microagent/servicename/core
     └── features                                    # Package-by-Feature
-        └── feature-name                            # e.g., "agent-registration"
+        └── featurename                            # e.g., "agentregistration"
             ├── constants/                          # Feature-specific constants
             │   └── FeatureNameConstants.java
             ├── entities/                           # Domain Entities (NOT JPA entities)
@@ -98,7 +98,7 @@ Each Microservice is a **separate Spring Boot Application** organized into 6 mod
 /service-name-data-access
 └── src/main/java/io/agentic/microagent/servicename/dataaccess
     ├── relational/                                 # Relational DB (PostgreSQL, MySQL)
-    │   ├── feature-name/
+    │   ├── featurename/
     │   │   ├── entities/                           # JPA/Hibernate entities
     │   │   │   └── FeatureNameJpaEntity.java
     │   │   ├── mapper/                             # JPA Entity ↔ Domain Entity
@@ -108,7 +108,7 @@ Each Microservice is a **separate Spring Boot Application** organized into 6 mod
     │   │   └── FeatureNameRepositoryImpl.java      # Implements core's Repository
     │   └── RelationalDatabaseAccessConfig.java     # @Configuration, @EnableJpaRepositories
     └── other-data-source-access/                   # NoSQL, Redis, External APIs
-        ├── feature-name/
+        ├── featurename/
         │   ├── entities/
         │   │   └── FeatureNameMongoEntity.java
         │   ├── mapper/
@@ -139,7 +139,7 @@ Each Microservice is a **separate Spring Boot Application** organized into 6 mod
         ├── apis/                                   # API interfaces
         │   └── FeatureNameApi.java
         └── features/
-            └── feature-name/
+            └── featurename/
                 ├── request/                        # API Request DTOs
                 │   └── CreateFeatureNameRequest.java
                 └── response/                       # API Response DTOs
@@ -190,12 +190,43 @@ Each Microservice is a **separate Spring Boot Application** organized into 6 mod
 │   ├── /agent-task                                 # Task management
 │   └── /agent-tools                                # Tool integration
 │
+├── /agent-common                                   # Common Utilities (Parent Module)
+│   ├── pom.xml
+│   ├── /common-constant                            # Shared constants
+│   │   ├── pom.xml
+│   │   └── src/main/java/io/agentic/microagent/common/constant/
+│   │       ├── DateTimeConstants.java
+│   │       ├── HttpConstants.java
+│   │       └── ValidationConstants.java
+│   ├── /common-validator                           # Shared validators
+│   │   ├── pom.xml
+│   │   └── src/main/java/io/agentic/microagent/common/validator/
+│   │       ├── EmailValidator.java
+│   │       ├── PhoneNumberValidator.java
+│   │       └── CustomConstraints.java
+│   ├── /common-mapstruct                           # Shared MapStruct configs
+│   │   ├── pom.xml
+│   │   └── src/main/java/io/agentic/microagent/common/mapstruct/
+│   │       ├── MapStructConfig.java
+│   │       └── CommonMappers.java
+│   └── /common-data-access                         # Shared data access utilities
+│       ├── pom.xml
+│       └── src/main/java/io/agentic/microagent/common/dataaccess/
+│           ├── base/
+│           │   ├── BaseEntity.java
+│           │   └── BaseRepository.java
+│           ├── config/
+│           │   ├── DatabaseConfig.java
+│           │   └── RedisConfig.java
+│           └── utils/
+│               └── QueryUtils.java
+│
 ├── /agent-registry-service                         # Service Registry (Microservice)
 │   ├── pom.xml                                     # Parent POM for registry
 │   ├── /registry-api                               # ✅ API Layer
 │   │   ├── pom.xml
 │   │   └── src/main/java/io/agentic/microagent/registry/api/features/
-│   │       └── agent-registration/
+│   │       └── agentregistration/
 │   │           ├── mapper/
 │   │           └── AgentRegistrationController.java
 │   ├── /registry-app                               # ✅ Application Entry
@@ -207,7 +238,7 @@ Each Microservice is a **separate Spring Boot Application** organized into 6 mod
 │   ├── /registry-core                              # ✅ Business Logic (CQRS)
 │   │   ├── pom.xml
 │   │   └── src/main/java/io/agentic/microagent/registry/core/features/
-│   │       └── agent-registration/
+│   │       └── agentregistration/
 │   │           ├── constants/
 │   │           ├── entities/
 │   │           ├── generator/
@@ -222,7 +253,7 @@ Each Microservice is a **separate Spring Boot Application** organized into 6 mod
 │   │   ├── pom.xml
 │   │   └── src/main/java/io/agentic/microagent/registry/dataaccess/
 │   │       ├── relational/
-│   │       │   ├── agent-registration/
+│   │       │   ├── agentregistration/
 │   │       │   │   ├── entities/
 │   │       │   │   ├── mapper/
 │   │       │   │   ├── repository/
@@ -238,7 +269,7 @@ Each Microservice is a **separate Spring Boot Application** organized into 6 mod
 │   │       ├── utils/
 │   │       └── http/
 │   │           ├── apis/
-│   │           └── features/agent-registration/
+│   │           └── features/agentregistration/
 │   │               ├── request/
 │   │               └── response/
 │   └── /registry-test                              # ✅ Integration Tests
@@ -624,25 +655,30 @@ public record CreateAgentRegistrationRequest(String name, String capabilities) {
 
 | Module      | Package Pattern                                                | Example                                                          |
 |-------------|----------------------------------------------------------------|------------------------------------------------------------------|
-| API         | `io.agentic.microagent.{service}.api.features.{feature-name}`  | `io.agentic.microagent.registry.api.features.agentregistration`  |
+| API         | `io.agentic.microagent.{service}.api.features.{featurename}`  | `io.agentic.microagent.registry.api.features.agentregistration`  |
 | App         | `io.agentic.microagent.{service}.app`                          | `io.agentic.microagent.registry.app`                             |
-| Core        | `io.agentic.microagent.{service}.core.features.{feature-name}` | `io.agentic.microagent.registry.core.features.agentregistration` |
+| Core        | `io.agentic.microagent.{service}.core.features.{featurename}` | `io.agentic.microagent.registry.core.features.agentregistration` |
 | Data Access | `io.agentic.microagent.{service}.dataaccess.{datasource}`      | `io.agentic.microagent.registry.dataaccess.relational`           |
 | Shared      | `io.agentic.microagent.{service}.shared`                       | `io.agentic.microagent.registry.shared`                          |
 | Test        | `io.agentic.microagent.{service}.test`                         | `io.agentic.microagent.registry.test`                            |
 
 ### Service Name Mapping
 
-| Microservice                      | Service Name | Module Prefix | Description                                       |
-|-----------------------------------|--------------|---------------|---------------------------------------------------|
-| agent-brain                       | `brain`      | `brain-*`     | Orchestrator - Plans & coordinates agents         |
-| agent-registry-service            | `registry`   | `registry-*`  | Agent catalog & routing service                   |
-| agent-policy-service              | `policy`     | `policy-*`    | Policy governance & enforcement                   |
-| **agent-demo** (Parent Module)    | `demo`       | N/A           | Demo parent - Contains specialist agent services  |
-| └─ agent-user-service             | `user`       | `user-*`      | User management specialist agent                  |
-| └─ agent-order-service            | `order`      | `order-*`     | Order management specialist agent                 |
-| └─ agent-payment-service          | `payment`    | `payment-*`   | Payment management specialist agent               |
-| agent-{future}                    | `{future}`   | `{future}-*`  | Future microservices follow this pattern          |
+| Microservice                      | Service Name | Module Prefix  | Description                                       |
+|-----------------------------------|--------------|----------------|---------------------------------------------------|
+| **agent-common** (Parent Module)  | `common`     | `common-*`     | Shared utilities - Constants, validators, etc.    |
+| └─ common-constant                | N/A          | N/A            | Shared constants across microservices             |
+| └─ common-validator               | N/A          | N/A            | Custom validators and validation utilities        |
+| └─ common-mapstruct               | N/A          | N/A            | Shared MapStruct configurations                   |
+| └─ common-data-access             | N/A          | N/A            | Base entities, repositories, DB configs           |
+| agent-brain                       | `brain`      | `brain-*`      | Orchestrator - Plans & coordinates agents         |
+| agent-registry-service            | `registry`   | `registry-*`   | Agent catalog & routing service                   |
+| agent-policy-service              | `policy`     | `policy-*`     | Policy governance & enforcement                   |
+| **agent-demo** (Parent Module)    | `demo`       | N/A            | Demo parent - Contains specialist agent services  |
+| └─ agent-user-service             | `user`       | `user-*`       | User management specialist agent                  |
+| └─ agent-order-service            | `order`      | `order-*`      | Order management specialist agent                 |
+| └─ agent-payment-service          | `payment`    | `payment-*`    | Payment management specialist agent               |
+| agent-{future}                    | `{future}`   | `{future}-*`   | Future microservices follow this pattern          |
 
 ---
 

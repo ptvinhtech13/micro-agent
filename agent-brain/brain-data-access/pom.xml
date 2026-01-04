@@ -4,7 +4,7 @@
 
     <parent>
         <groupId>io.agentic.microagent.brain</groupId>
-        <artifactId>agent-brain-service</artifactId>
+        <artifactId>agent-brain</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 

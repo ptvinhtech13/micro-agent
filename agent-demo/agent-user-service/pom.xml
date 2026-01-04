@@ -3,8 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>io.agentic.microagent</groupId>
-        <artifactId>microagent-parent</artifactId>
+        <groupId>io.agentic.microagent.demo</groupId>
+        <artifactId>agent-demo</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 

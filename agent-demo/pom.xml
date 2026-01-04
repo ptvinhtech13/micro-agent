@@ -16,8 +16,8 @@
     <description>Demo parent module - Contains specialist agent services for demonstration</description>
 
     <modules>
-        <module>agent-user-service</module>
         <module>agent-order-service</module>
         <module>agent-payment-service</module>
+        <module>agent-user-service</module>
     </modules>
 </project>
