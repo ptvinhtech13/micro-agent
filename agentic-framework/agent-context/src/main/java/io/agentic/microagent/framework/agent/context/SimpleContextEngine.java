@@ -38,10 +38,10 @@ public class SimpleContextEngine implements ContextEngine {
 		return AgentContext.builder()
 				.conversationId(request.getConversationId())
 				.userId(request.getUserId())
-				.userProfile(userProfile)
-				.environmentContext(request.getContext() != null ? request.getContext() : new HashMap<>())
-				.domainContext(new HashMap<>())
-				.technicalContext(new HashMap<>())
+				//				.userProfile(userProfile)
+				//				.environmentContext(request.getContext() != null ? request.getContext() : new HashMap<>())
+				//				.domainContext(new HashMap<>())
+				//				.technicalContext(new HashMap<>())
 				.build();
 	}
 

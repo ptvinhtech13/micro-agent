@@ -18,9 +18,9 @@
     <description>Parent POM for MicroAgent multi-module project</description>
 
     <modules>
-        <module>agentic-framework</module>
-        <module>agent-registry-service</module>
         <module>agent-demo</module>
+        <module>agent-registry-service</module>
+        <module>agentic-framework</module>
     </modules>
 
     <properties>
@@ -36,6 +36,28 @@
 
     <dependencyManagement>
         <dependencies>
+
+            <!-- Agent Demo Service Modules -->
+            <dependency>
+                <groupId>io.agentic.microagent.demo</groupId>
+                <artifactId>demo-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.demo</groupId>
+                <artifactId>demo-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.demo</groupId>
+                <artifactId>demo-data-access</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.demo</groupId>
+                <artifactId>demo-shared</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <!-- Agentic Framework Modules -->
             <dependency>
                 <groupId>io.agentic.microagent.framework</groupId>
@@ -107,28 +129,6 @@
             <dependency>
                 <groupId>io.agentic.microagent.registry</groupId>
                 <artifactId>registry-shared</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <!-- Agent Demo Service Modules -->
-            <dependency>
-                <groupId>io.agentic.microagent.demo</groupId>
-                <artifactId>demo-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.agentic.microagent.demo</groupId>
-                <artifactId>demo-core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.agentic.microagent.demo</groupId>
-                <artifactId>demo-data-access</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.agentic.microagent.demo</groupId>
-                <artifactId>demo-shared</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

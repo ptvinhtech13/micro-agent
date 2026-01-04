@@ -1,93 +1,425 @@
-Restructure to Multi-Module Project
-------------------------------------------
+# MicroAgent Multi-Module Project Structure
+==========================================
 
-Restructure the current project to support multiple modules for better organization and maintainability following the below:
+This document defines the **MANDATORY** project structure for the MicroAgent platform. All microservices **MUST** follow this structure exactly.
 
-## Project Info:
-- Current Project Name: MicroAgent
-- Package Name: io.agentic.microagent
+## Project Info
+- **Project Name**: MicroAgent
+- **Base Package**: `io.agentic.microagent`
+- **Build Tool**: Maven (Multi-Module)
+- **Java Version**: 21
+- **Spring Boot Version**: 3.5.9
 
-## Base Microservice Structure (BASE MICROSERVICE STRUCTURE)
-- Each Microservice is a separate Spring Boot Application with its own modules.
-- Must follow the structure below for each Microservice.
-```
-/service-name-api -- This is seperated module. API module containing REST controllers and WebSocket controllers. Following the Package Feature Pattern Strategy. This will import agentic-core, agentic-shared modules. Package name: io.agentic.microagent.api.*
-   /features
-      /feature-name -- Following the Command Query Responsibility Segregation (CQRS) pattern.
-         /mapper  -- Contains mapping classes to map between different API DTO (Data Transfer Object) and Command/Query Request from service-name-core. We use MapStruct here.
-         FeatureNameController.java  - This is REST Controller class or WebSocket Controller class for this Feature. Contains API endpoints for this feature.
-/service-name-app -- This is seperated module. Main Spring Boot Application java class. Only this file is contained. This will import all modules. Package name: io.agentic.microagent.servicename.app
-/service-name-core -- This is seperated module. Core module containing main business logic and services. Following the Package Feature Pattern Strategy. Rules: Just Business Logic Domain, No Controller is here. Package name: io.agentic.microagent.servicename.core
-   /features
-      /feature-name -- Following the Command Query Responsibility Segregation (CQRS) pattern.
-         /constants -- Containts constant values used in the feature or core module.
-         /entities -- Contains Java Aggregate Model Entity Business Classes. (Not meaning JPA/Hibernate Entity) This is aggregate Entity business class of the feature domain.
-         /generator -- Contains code generator classes if needed for the feature. Like ID generator for Aggregate Entity Business
-         /mapper  -- Contains mapping classes to map between different models (e.g., Entity to DTO, DTO to Entity). We can use MapStruct here.
-         /request -- Contains Command Request Model classes and Query Request Model classes of this Feature. Rule: Start with Verb and End with Action (Query/Command) For example: CreateFeatureNameCommand.java, GetFeatureNameQuery.java
-         /service -- This contains implementation classes for Command Service Interface and Query Service Interface of this Feature. Contains business logic methods for Command and Query operations. For example: FeatureNameCommandServiceImpl.java, FeatureNameQueryServiceImpl.java
-         /utils
-         FeatureNameCommandService.java -- This is interface for Command Service of this Feature. Contains business logic methods for Command operations.
-         FeatureNameQueryService.java -- This is interface for Query Service of this Feature. Contains business logic methods for Query operations.
-         FeatureNameRepository.java -- This is interface for Data Access Repository of this Feature. Contains data access methods for the feature aggregate entity.
-/service-name-data-access -- This is seperated module. Data Access module containing repository implementations and database interaction logic. Package name: io.agentic.microagent.servicename.dataaccess
-   /other-data-source-access - - This contains other data source access implementations if needed (e.g., NoSQL, In-Memory DB, External API)
-      /feature-name
-         /entities -- Contains Domain Entity Classes for this feature in other data source.
-         /mapper  -- Contains mapping classes to map between Domain Entity and Core Aggregate Module Entity Model
-         /repository -- Contains Repository Implementation classes for this feature.
-            /EntityNameOtherDataSourceRepository.java -- This is the Repository interface for the Domain Entity in other data source.
-         FeatureNameRepositoryImpl.java -- This is the implementation class for the FeatureNameRepository interface in service-name module. Contains database interaction logic using other data source access method.
-      OtherDataSourceAccessConfig.java -- This is the configuration class for other data source connection settings. For example: @Configuration class for MongoDB or Redis connection settings.
-   /relational
-      /feature-name
-         /entities -- Contains JPA/Hibernate Entity Classes for relational database tables of this feature.
-         /mapper  -- Contains mapping classes to map between JPA/Hibernate Entity and Core Aggregate Module Entity Model.
-         /repository -- Contains Repository Implementation classes for this feature.
-            /EntityNameJpaRepository.java -- This is the JPA Repository interface for the Domain Entity JPA/Hibernate Entity in relational database.
-         FeatureNameRepositoryImpl.java -- This is the implementation class for the FeatureNameRepository interface in service-name module. Contains database interaction logic using JPA/Hibernate or JDBC.
-      RelationalDatabaseAccessConfig.java -- This is the configuration class for relational database connection and JPA/Hibernate settings. For example: @Configuration, @EnableJpaRepositories(basePackages = { "io.agentic.microagent.dataaccess.servicename.relational" }) @EntityScan(basePackages = { "io.agentic.microagent.dataaccess.servicename.relational" }), @EnableJpaAuditing
-/service-name-shared -- This is seperated module. Shared module containing common utilities, constants, and models used across other modules, event other MicroAgent (MicroAgent per Microservice) Package name: io.agentic.microagent.dataaccess.servicename.shared
-   /contants -- Containts constant values used across multiple modules.
-   /enums -- Contains enum types used across multiple modules.
-   /exceptions -- Contains custom exception classes used across multiple modules.
-   /utils -- Contains utility classes and helper functions used across multiple modules.
-   /http -- Contains HTTP related classes, e.g., API request/response models if needed across multiple modules.
-      /apis -- Contains HTTP API Interface classes. That will be used and implemented by service-name-api Controller module. For example: FeatureNameApi.java
-      /features
-         /feature-name
-            /request -- Contains all API Request DTOs class for this feature. This is used in service-name-api module for API Implementation.
-               FeatureNameRequest.java 
-            /response -- Contains all API Request DTOs class for this feature. This is used in service-name-api module for API Implementation.
-               FeatureNameResponse.java
-/service-name-test -- This is seperated module. Just for focus using SpringBootIntegrationTest with TestContainer to setup infra.
-```
+---
 
-## Project Structure
-```
-/docker-compose
-   /infra
-      /scripts -- bash scripts (for infra setup if needed)
-      /configs -- configuration files (e.g., yaml, env, if needed)
-      /volumes -- local mounted docker volume data
-      common.yml -- common configuration for all docker-compose configs.
-      docker-compose.local.yml -- docker-compose file for local development environment. All docker image version should refer to the versions declared in versions.env
-      versions.env -- version declaration for docker images. For example: POSTGRES_VERSION=16.4, POSTGRES_FORWARDED_PORT=5432
-      local.run.sh -- One-shot run script with the flag -d to indicate for background docker run, othervise foreground run.
-/agentic-framework -- This is seperated module. All folders in below is the seperated module and sub-module/child of agentic-framework module. Package name: io.agentic.microagent.framework
-   /agent-brain -- Contains core classes for Agent Brain implementation. 
-   /agent-context -- Contains classes for building and managing agent context.
-   /agent-core -- Contains core classes for Agent Framework implementation.
-   /agent-engage -- Contains classes for agent engagement and interaction handling.
-   /agent-memory -- Contains classes for agent memory management.
-   /agent-planning -- Contains classes for agent planning and decision-making, task decomposition
-   /agent-reasoning -- Contains classes for agent reasoning and problem-solving.
-   /agent-shared -- Shared module for Agent Framework containing common utilities, constants, and models used across other Agent Framework modules.
-   /agent-tools -- Contains classes for integrating and managing external tools for agents.
-   /agent-task -- Contains classes for agent task management and execution.
-/agent-registry-service -- This is seperated module. Service Registry module for Agent discovery and registration. Package name: io.agentic.microagent.registry
-    <<YOU MUST FOLLOW THE SAME BASE MICROSERVICE STRUCTURE AS DESCRIBED ABOVE FOR MICROSERVICE MODULES with api, app, core, data-access, shared, test modules and service name is "registry">>   
-/agent-demo -- This is seperated module. Agent demostration. Package name: io.agentic.microagent.demo
-    <<YOU MUST FOLLOW THE SAME BASE MICROSERVICE STRUCTURE AS DESCRIBED ABOVE FOR MICROSERVICE MODULES with api, app, core, data-access, shared, test modules and service name is "demo">>   
+## 📋 Table of Contents
+1. [Base Microservice Structure (MANDATORY)](#base-microservice-structure)
+2. [Complete Project Structure](#complete-project-structure)
+3. [Concrete Examples](#concrete-examples)
+4. [Package Naming Conventions](#package-naming-conventions)
+
+---
+
+## Base Microservice Structure (MANDATORY)
+
+### Overview
+Each Microservice is a **separate Spring Boot Application** organized into 6 modules following **Package-by-Feature** and **CQRS** patterns.
+
+### The 6 Mandatory Modules
+
+#### 1️⃣ `service-name-api` - API Layer
+**Purpose**: REST/WebSocket controllers
+**Package**: `io.agentic.microagent.api.*`
+**Dependencies**: Imports `service-name-core`, `service-name-shared`
 
 ```
+/service-name-api
+└── src/main/java/io/agentic/microagent/api
+    └── features                                    # Package-by-Feature
+        └── feature-name                            # e.g., "agent-registration"
+            ├── mapper/                             # MapStruct mappers (DTO ↔ Command/Query)
+            │   └── FeatureNameApiMapper.java
+            └── FeatureNameController.java          # REST or WebSocket Controller
+```
+
+#### 2️⃣ `service-name-app` - Application Entry Point
+**Purpose**: Main Spring Boot Application class
+**Package**: `io.agentic.microagent.servicename.app`
+**Dependencies**: Imports ALL other modules
+
+```
+/service-name-app
+├── src/main/java/io/agentic/microagent/servicename/app
+│   └── ServiceNameApplication.java                # @SpringBootApplication
+└── src/main/resources
+    ├── application.yml                            # Application configuration
+    └── application-{profile}.yml                  # Profile-specific configs
+```
+
+#### 3️⃣ `service-name-core` - Business Logic Layer (CQRS)
+**Purpose**: Domain logic, services, business entities
+**Package**: `io.agentic.microagent.servicename.core`
+**Dependencies**: Imports `service-name-shared`
+**Rules**: ❌ NO Controllers here, ✅ Pure business logic only
+
+```
+/service-name-core
+└── src/main/java/io/agentic/microagent/servicename/core
+    └── features                                    # Package-by-Feature
+        └── feature-name                            # e.g., "agent-registration"
+            ├── constants/                          # Feature-specific constants
+            │   └── FeatureNameConstants.java
+            ├── entities/                           # Domain Entities (NOT JPA entities)
+            │   └── FeatureNameAggregate.java       # Aggregate root
+            ├── generator/                          # ID generators, factories
+            │   └── FeatureNameIdGenerator.java
+            ├── mapper/                             # MapStruct mappers (internal)
+            │   └── FeatureNameCoreMapper.java
+            ├── request/                            # CQRS Commands & Queries
+            │   ├── CreateFeatureNameCommand.java   # Command pattern
+            │   ├── UpdateFeatureNameCommand.java
+            │   └── GetFeatureNameQuery.java        # Query pattern
+            ├── service/                            # Service implementations
+            │   ├── FeatureNameCommandServiceImpl.java
+            │   └── FeatureNameQueryServiceImpl.java
+            ├── utils/                              # Feature-specific utilities
+            │   └── FeatureNameValidator.java
+            ├── FeatureNameCommandService.java      # Command service interface
+            ├── FeatureNameQueryService.java        # Query service interface
+            └── FeatureNameRepository.java          # Repository interface (not impl!)
+```
+
+#### 4️⃣ `service-name-data-access` - Data Access Layer
+**Purpose**: Repository implementations, database interaction
+**Package**: `io.agentic.microagent.servicename.dataaccess`
+**Dependencies**: Imports `service-name-core`, `service-name-shared`
+
+```
+/service-name-data-access
+└── src/main/java/io/agentic/microagent/servicename/dataaccess
+    ├── relational/                                 # Relational DB (PostgreSQL, MySQL)
+    │   ├── feature-name/
+    │   │   ├── entities/                           # JPA/Hibernate entities
+    │   │   │   └── FeatureNameJpaEntity.java
+    │   │   ├── mapper/                             # JPA Entity ↔ Domain Entity
+    │   │   │   └── FeatureNameJpaMapper.java
+    │   │   ├── repository/
+    │   │   │   └── FeatureNameJpaRepository.java   # Spring Data JPA interface
+    │   │   └── FeatureNameRepositoryImpl.java      # Implements core's Repository
+    │   └── RelationalDatabaseAccessConfig.java     # @Configuration, @EnableJpaRepositories
+    └── other-data-source-access/                   # NoSQL, Redis, External APIs
+        ├── feature-name/
+        │   ├── entities/
+        │   │   └── FeatureNameMongoEntity.java
+        │   ├── mapper/
+        │   │   └── FeatureNameMongoMapper.java
+        │   ├── repository/
+        │   │   └── FeatureNameMongoRepository.java
+        │   └── FeatureNameRepositoryImpl.java
+        └── OtherDataSourceAccessConfig.java        # @Configuration for MongoDB/Redis
+```
+
+#### 5️⃣ `service-name-shared` - Shared Components
+**Purpose**: DTOs, constants, utilities shared across modules
+**Package**: `io.agentic.microagent.servicename.shared`
+**Dependencies**: None (no dependencies on other service modules)
+
+```
+/service-name-shared
+└── src/main/java/io/agentic/microagent/servicename/shared
+    ├── constants/                                  # Cross-module constants
+    │   └── ServiceNameConstants.java
+    ├── enums/                                      # Shared enums
+    │   └── FeatureNameStatus.java
+    ├── exceptions/                                 # Custom exceptions
+    │   └── FeatureNameException.java
+    ├── utils/                                      # Utility classes
+    │   └── DateTimeUtils.java
+    └── http/                                       # HTTP-related models
+        ├── apis/                                   # API interfaces
+        │   └── FeatureNameApi.java
+        └── features/
+            └── feature-name/
+                ├── request/                        # API Request DTOs
+                │   └── CreateFeatureNameRequest.java
+                └── response/                       # API Response DTOs
+                    └── FeatureNameResponse.java
+```
+
+#### 6️⃣ `service-name-test` - Integration Tests
+**Purpose**: Integration tests using TestContainers
+**Package**: `io.agentic.microagent.servicename.test`
+**Dependencies**: Imports `service-name-app` and test dependencies
+
+```
+/service-name-test
+└── src/test
+    ├── java/io/agentic/microagent/servicename/test
+    │   └── FeatureNameIntegrationTest.java
+    └── resources
+        └── testcontainers.properties
+```
+
+---
+
+## Complete Project Structure
+
+```
+/microagent                                         # Root project directory
+├── pom.xml                                         # Root parent POM
+│
+├── /docker-compose                                 # Docker infrastructure
+│   ├── /infra
+│   │   ├── /scripts                                # Bash scripts for infra
+│   │   ├── /configs                                # Configuration files
+│   │   └── /volumes                                # Docker volume data
+│   ├── common.yml                                  # Common docker-compose config
+│   ├── docker-compose.local.yml                    # Local development compose
+│   ├── versions.env                                # Docker image versions
+│   └── local.run.sh                                # Run script
+│
+├── /agentic-framework                              # Agent Framework (Parent Module)
+│   ├── pom.xml
+│   ├── /agent-brain                                # Brain/reasoning capabilities
+│   ├── /agent-context                              # Context management
+│   ├── /agent-core                                 # Core agent functionality
+│   ├── /agent-engage                               # Engagement & interaction
+│   ├── /agent-memory                               # Memory management
+│   ├── /agent-planning                             # Planning & task decomposition
+│   ├── /agent-shared                               # Shared utilities
+│   ├── /agent-task                                 # Task management
+│   └── /agent-tools                                # Tool integration
+│
+├── /agent-registry-service                         # Service Registry (Microservice)
+│   ├── pom.xml                                     # Parent POM for registry
+│   ├── /registry-api                               # ✅ API Layer
+│   │   ├── pom.xml
+│   │   └── src/main/java/io/agentic/microagent/registry/api/features/
+│   │       └── agent-registration/
+│   │           ├── mapper/
+│   │           └── AgentRegistrationController.java
+│   ├── /registry-app                               # ✅ Application Entry
+│   │   ├── pom.xml
+│   │   ├── src/main/java/io/agentic/microagent/registry/app/
+│   │   │   └── RegistryServiceApplication.java
+│   │   └── src/main/resources/
+│   │       └── application.yml
+│   ├── /registry-core                              # ✅ Business Logic (CQRS)
+│   │   ├── pom.xml
+│   │   └── src/main/java/io/agentic/microagent/registry/core/features/
+│   │       └── agent-registration/
+│   │           ├── constants/
+│   │           ├── entities/
+│   │           ├── generator/
+│   │           ├── mapper/
+│   │           ├── request/
+│   │           ├── service/
+│   │           ├── utils/
+│   │           ├── AgentRegistrationCommandService.java
+│   │           ├── AgentRegistrationQueryService.java
+│   │           └── AgentRegistrationRepository.java
+│   ├── /registry-data-access                       # ✅ Data Access Layer
+│   │   ├── pom.xml
+│   │   └── src/main/java/io/agentic/microagent/registry/dataaccess/
+│   │       ├── relational/
+│   │       │   ├── agent-registration/
+│   │       │   │   ├── entities/
+│   │       │   │   ├── mapper/
+│   │       │   │   ├── repository/
+│   │       │   │   └── AgentRegistrationRepositoryImpl.java
+│   │       │   └── RelationalDatabaseAccessConfig.java
+│   │       └── other-data-source-access/
+│   ├── /registry-shared                            # ✅ Shared Components
+│   │   ├── pom.xml
+│   │   └── src/main/java/io/agentic/microagent/registry/shared/
+│   │       ├── constants/
+│   │       ├── enums/
+│   │       ├── exceptions/
+│   │       ├── utils/
+│   │       └── http/
+│   │           ├── apis/
+│   │           └── features/agent-registration/
+│   │               ├── request/
+│   │               └── response/
+│   └── /registry-test                              # ✅ Integration Tests
+│       ├── pom.xml
+│       └── src/test/java/io/agentic/microagent/registry/test/
+│
+└── /agent-demo                                     # Demo Service (Microservice)
+    ├── pom.xml                                     # Parent POM for demo
+    ├── /demo-api                                   # ✅ API Layer
+    │   ├── pom.xml
+    │   └── src/main/java/io/agentic/microagent/demo/api/features/
+    │       └── chat/
+    │           ├── mapper/
+    │           └── ChatController.java
+    ├── /demo-app                                   # ✅ Application Entry
+    │   ├── pom.xml
+    │   ├── src/main/java/io/agentic/microagent/demo/app/
+    │   │   └── DemoServiceApplication.java
+    │   └── src/main/resources/
+    │       └── application.yml
+    ├── /demo-core                                  # ✅ Business Logic (CQRS)
+    │   ├── pom.xml
+    │   └── src/main/java/io/agentic/microagent/demo/core/features/
+    │       └── chat/
+    │           ├── constants/
+    │           ├── entities/
+    │           ├── generator/
+    │           ├── mapper/
+    │           ├── request/
+    │           ├── service/
+    │           ├── utils/
+    │           ├── ChatCommandService.java
+    │           ├── ChatQueryService.java
+    │           └── ChatRepository.java
+    ├── /demo-data-access                           # ✅ Data Access Layer
+    │   ├── pom.xml
+    │   └── src/main/java/io/agentic/microagent/demo/dataaccess/
+    │       ├── relational/
+    │       │   ├── chat/
+    │       │   │   ├── entities/
+    │       │   │   ├── mapper/
+    │       │   │   ├── repository/
+    │       │   │   └── ChatRepositoryImpl.java
+    │       │   └── RelationalDatabaseAccessConfig.java
+    │       └── other-data-source-access/
+    ├── /demo-shared                                # ✅ Shared Components
+    │   ├── pom.xml
+    │   └── src/main/java/io/agentic/microagent/demo/shared/
+    │       ├── constants/
+    │       ├── enums/
+    │       ├── exceptions/
+    │       ├── utils/
+    │       └── http/
+    │           ├── apis/
+    │           └── features/chat/
+    │               ├── request/
+    │               └── response/
+    └── /demo-test                                  # ✅ Integration Tests
+        ├── pom.xml
+        └── src/test/java/io/agentic/microagent/demo/test/
+```
+
+---
+
+## Concrete Examples
+
+### Example 1: Agent Registry Service - Agent Registration Feature
+
+```java
+// 1. API Layer (registry-api)
+package io.agentic.microagent.registry.api.features.agentregistration;
+
+@RestController
+@RequestMapping("/api/v1/agents")
+public class AgentRegistrationController {
+    // REST endpoints
+}
+
+// 2. Core Layer (registry-core)
+package io.agentic.microagent.registry.core.features.agentregistration;
+
+// Command
+public record CreateAgentRegistrationCommand(String agentId, String name) {}
+
+// Service Interface
+public interface AgentRegistrationCommandService {
+    void createAgent(CreateAgentRegistrationCommand command);
+}
+
+// Repository Interface
+public interface AgentRegistrationRepository {
+    void save(AgentRegistrationAggregate aggregate);
+}
+
+// 3. Data Access Layer (registry-data-access)
+package io.agentic.microagent.registry.dataaccess.relational.agentregistration;
+
+// JPA Entity
+@Entity
+@Table(name = "agent_registrations")
+public class AgentRegistrationJpaEntity {
+    // JPA fields
+}
+
+// Repository Implementation
+@Repository
+public class AgentRegistrationRepositoryImpl implements AgentRegistrationRepository {
+    // Implementation
+}
+
+// 4. Shared Layer (registry-shared)
+package io.agentic.microagent.registry.shared.http.features.agentregistration.request;
+
+public record CreateAgentRegistrationRequest(String name, String capabilities) {}
+```
+
+---
+
+## Package Naming Conventions
+
+### Service-Specific Packages
+
+| Module      | Package Pattern                                                | Example                                                          |
+|-------------|----------------------------------------------------------------|------------------------------------------------------------------|
+| API         | `io.agentic.microagent.{service}.api.features.{feature-name}`  | `io.agentic.microagent.registry.api.features.agentregistration`  |
+| App         | `io.agentic.microagent.{service}.app`                          | `io.agentic.microagent.registry.app`                             |
+| Core        | `io.agentic.microagent.{service}.core.features.{feature-name}` | `io.agentic.microagent.registry.core.features.agentregistration` |
+| Data Access | `io.agentic.microagent.{service}.dataaccess.{datasource}`      | `io.agentic.microagent.registry.dataaccess.relational`           |
+| Shared      | `io.agentic.microagent.{service}.shared`                       | `io.agentic.microagent.registry.shared`                          |
+| Test        | `io.agentic.microagent.{service}.test`                         | `io.agentic.microagent.registry.test`                            |
+
+### Service Name Mapping
+
+| Microservice           | Service Name | Module Prefix |
+|------------------------|--------------|---------------|
+| agent-registry-service | `registry`   | `registry-*`  |
+| agent-demo             | `demo`       | `demo-*`      |
+| agent-{future}         | `{future}`   | `{future}-*`  |
+
+---
+
+## 🎯 Quick Reference: Creating a New Microservice
+
+### Step-by-Step Checklist
+
+When creating a new microservice called `agent-xyz-service`:
+
+1. **Create Parent Module**: `agent-xyz-service/pom.xml`
+2. **Create 6 Sub-Modules**:
+   - ✅ `xyz-api` → API layer
+   - ✅ `xyz-app` → Spring Boot application
+   - ✅ `xyz-core` → Business logic (CQRS)
+   - ✅ `xyz-data-access` → Data access layer
+   - ✅ `xyz-shared` → Shared components
+   - ✅ `xyz-test` → Integration tests
+3. **Follow Package Structure**: Use the examples above as templates
+4. **Update Root POM**: Add `agent-xyz-service` to root `pom.xml`
+5. **Add Dependencies**: Configure module dependencies correctly
+
+---
+
+## 📚 Architecture Patterns Used
+
+- **Package-by-Feature**: Organize code by business feature, not technical layer
+- **CQRS (Command Query Responsibility Segregation)**: Separate read/write operations
+- **Hexagonal Architecture**: Core business logic isolated from infrastructure
+- **Repository Pattern**: Abstract data access logic
+- **DTO Pattern**: Separate API models from domain models
+
+---
+
+## ⚠️ Critical Rules
+
+1. ❌ **NEVER** put business logic in API layer
+2. ❌ **NEVER** let Core layer depend on Data Access layer
+3. ❌ **NEVER** use JPA entities in Core layer (use domain entities)
+4. ✅ **ALWAYS** use MapStruct for mapping between layers
+5. ✅ **ALWAYS** follow CQRS naming: `{Verb}{Feature}{Command/Query}`
+6. ✅ **ALWAYS** implement Repository interface in Data Access layer
+
+---
+
+**Last Updated**: 2026-01-04
+**Maintained By**: Architecture Team
