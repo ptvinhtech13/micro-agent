@@ -346,60 +346,220 @@ Each Microservice is a **separate Spring Boot Application** organized into 6 mod
 │       ├── pom.xml
 │       └── src/test/java/io/agentic/microagent/policy/test/
 │
-└── /agent-demo                                     # Demo Service (Microservice)
-    ├── pom.xml                                     # Parent POM for demo
-    ├── /demo-api                                   # ✅ API Layer
-    │   ├── pom.xml
-    │   └── src/main/java/io/agentic/microagent/demo/api/features/
-    │       └── chat/
-    │           ├── mapper/
-    │           └── ChatController.java
-    ├── /demo-app                                   # ✅ Application Entry
-    │   ├── pom.xml
-    │   ├── src/main/java/io/agentic/microagent/demo/app/
-    │   │   └── DemoServiceApplication.java
-    │   └── src/main/resources/
-    │       └── application.yml
-    ├── /demo-core                                  # ✅ Business Logic (CQRS)
-    │   ├── pom.xml
-    │   └── src/main/java/io/agentic/microagent/demo/core/features/
-    │       └── chat/
-    │           ├── constants/
-    │           ├── entities/
-    │           ├── generator/
-    │           ├── mapper/
-    │           ├── request/
-    │           ├── service/
-    │           ├── utils/
-    │           ├── ChatCommandService.java
-    │           ├── ChatQueryService.java
-    │           └── ChatRepository.java
-    ├── /demo-data-access                           # ✅ Data Access Layer
-    │   ├── pom.xml
-    │   └── src/main/java/io/agentic/microagent/demo/dataaccess/
-    │       ├── relational/
-    │       │   ├── chat/
-    │       │   │   ├── entities/
-    │       │   │   ├── mapper/
-    │       │   │   ├── repository/
-    │       │   │   └── ChatRepositoryImpl.java
-    │       │   └── RelationalDatabaseAccessConfig.java
-    │       └── other-data-source-access/
-    ├── /demo-shared                                # ✅ Shared Components
-    │   ├── pom.xml
-    │   └── src/main/java/io/agentic/microagent/demo/shared/
-    │       ├── constants/
-    │       ├── enums/
-    │       ├── exceptions/
-    │       ├── utils/
-    │       └── http/
-    │           ├── apis/
-    │           └── features/chat/
-    │               ├── request/
-    │               └── response/
-    └── /demo-test                                  # ✅ Integration Tests
-        ├── pom.xml
-        └── src/test/java/io/agentic/microagent/demo/test/
+├── /agent-brain                                    # Agent Brain Service (Microservice - Orchestrator)
+│   ├── pom.xml                                     # Parent POM for brain
+│   ├── /brain-api                                  # ✅ API Layer
+│   │   ├── pom.xml
+│   │   └── src/main/java/io/agentic/microagent/brain/api/features/
+│   │       └── orchestration/
+│   │           ├── mapper/
+│   │           └── OrchestrationController.java
+│   ├── /brain-app                                  # ✅ Application Entry
+│   │   ├── pom.xml
+│   │   ├── src/main/java/io/agentic/microagent/brain/app/
+│   │   │   └── BrainServiceApplication.java
+│   │   └── src/main/resources/
+│   │       └── application.yml
+│   ├── /brain-core                                 # ✅ Business Logic (CQRS)
+│   │   ├── pom.xml
+│   │   └── src/main/java/io/agentic/microagent/brain/core/features/
+│   │       └── orchestration/
+│   │           ├── constants/
+│   │           ├── entities/                       # TaskPlan, AgentCoordination
+│   │           ├── mapper/
+│   │           ├── request/                        # PlanTaskCommand, CoordinateAgentsCommand
+│   │           ├── service/
+│   │           ├── utils/
+│   │           ├── OrchestrationCommandService.java
+│   │           ├── OrchestrationQueryService.java
+│   │           └── OrchestrationRepository.java
+│   ├── /brain-data-access                          # ✅ Data Access Layer
+│   │   ├── pom.xml
+│   │   └── src/main/java/io/agentic/microagent/brain/dataaccess/
+│   │       └── relational/
+│   │           ├── orchestration/
+│   │           │   ├── entities/
+│   │           │   ├── mapper/
+│   │           │   ├── repository/
+│   │           │   └── OrchestrationRepositoryImpl.java
+│   │           └── RelationalDatabaseAccessConfig.java
+│   ├── /brain-shared                               # ✅ Shared Components
+│   │   ├── pom.xml
+│   │   └── src/main/java/io/agentic/microagent/brain/shared/
+│   │       ├── constants/
+│   │       ├── enums/                              # TaskStatus, CoordinationMode
+│   │       ├── exceptions/
+│   │       ├── utils/
+│   │       └── http/
+│   │           ├── apis/
+│   │           └── features/orchestration/
+│   │               ├── request/
+│   │               └── response/
+│   └── /brain-test                                 # ✅ Integration Tests
+│       ├── pom.xml
+│       └── src/test/java/io/agentic/microagent/brain/test/
+│
+└── /agent-demo                                     # Demo Parent Module
+    ├── pom.xml                                     # Parent POM (modules: agent-user-service, agent-order-service, agent-payment-service)
+    │
+    ├── /agent-user-service                         # User Management Specialist Agent
+    │   ├── pom.xml                                 # Parent POM for user
+    │   ├── /user-api                               # ✅ API Layer
+    │   │   ├── pom.xml
+    │   │   └── src/main/java/io/agentic/microagent/user/api/features/
+    │   │       └── user-management/
+    │   │           ├── mapper/
+    │   │           └── UserManagementController.java
+    │   ├── /user-app                               # ✅ Application Entry
+    │   │   ├── pom.xml
+    │   │   ├── src/main/java/io/agentic/microagent/user/app/
+    │   │   │   └── UserServiceApplication.java
+    │   │   └── src/main/resources/
+    │   │       └── application.yml
+    │   ├── /user-core                              # ✅ Business Logic (CQRS)
+    │   │   ├── pom.xml
+    │   │   └── src/main/java/io/agentic/microagent/user/core/features/
+    │   │       └── user-management/
+    │   │           ├── constants/
+    │   │           ├── entities/
+    │   │           ├── mapper/
+    │   │           ├── request/
+    │   │           ├── service/
+    │   │           ├── utils/
+    │   │           ├── UserManagementCommandService.java
+    │   │           ├── UserManagementQueryService.java
+    │   │           └── UserManagementRepository.java
+    │   ├── /user-data-access                       # ✅ Data Access Layer
+    │   │   ├── pom.xml
+    │   │   └── src/main/java/io/agentic/microagent/user/dataaccess/
+    │   │       └── relational/
+    │   │           ├── user-management/
+    │   │           │   ├── entities/
+    │   │           │   ├── mapper/
+    │   │           │   ├── repository/
+    │   │           │   └── UserManagementRepositoryImpl.java
+    │   │           └── RelationalDatabaseAccessConfig.java
+    │   ├── /user-shared                            # ✅ Shared Components
+    │   │   ├── pom.xml
+    │   │   └── src/main/java/io/agentic/microagent/user/shared/
+    │   │       ├── constants/
+    │   │       ├── enums/
+    │   │       ├── exceptions/
+    │   │       ├── utils/
+    │   │       └── http/
+    │   │           ├── apis/
+    │   │           └── features/user-management/
+    │   │               ├── request/
+    │   │               └── response/
+    │   └── /user-test                              # ✅ Integration Tests
+    │       ├── pom.xml
+    │       └── src/test/java/io/agentic/microagent/user/test/
+    │
+    ├── /agent-order-service                        # Order Management Specialist Agent
+    │   ├── pom.xml                                 # Parent POM for order
+    │   ├── /order-api                              # ✅ API Layer
+    │   │   ├── pom.xml
+    │   │   └── src/main/java/io/agentic/microagent/order/api/features/
+    │   │       └── order-management/
+    │   │           ├── mapper/
+    │   │           └── OrderManagementController.java
+    │   ├── /order-app                              # ✅ Application Entry
+    │   │   ├── pom.xml
+    │   │   ├── src/main/java/io/agentic/microagent/order/app/
+    │   │   │   └── OrderServiceApplication.java
+    │   │   └── src/main/resources/
+    │   │       └── application.yml
+    │   ├── /order-core                             # ✅ Business Logic (CQRS)
+    │   │   ├── pom.xml
+    │   │   └── src/main/java/io/agentic/microagent/order/core/features/
+    │   │       └── order-management/
+    │   │           ├── constants/
+    │   │           ├── entities/
+    │   │           ├── mapper/
+    │   │           ├── request/
+    │   │           ├── service/
+    │   │           ├── utils/
+    │   │           ├── OrderManagementCommandService.java
+    │   │           ├── OrderManagementQueryService.java
+    │   │           └── OrderManagementRepository.java
+    │   ├── /order-data-access                      # ✅ Data Access Layer
+    │   │   ├── pom.xml
+    │   │   └── src/main/java/io/agentic/microagent/order/dataaccess/
+    │   │       └── relational/
+    │   │           ├── order-management/
+    │   │           │   ├── entities/
+    │   │           │   ├── mapper/
+    │   │           │   ├── repository/
+    │   │           │   └── OrderManagementRepositoryImpl.java
+    │   │           └── RelationalDatabaseAccessConfig.java
+    │   ├── /order-shared                           # ✅ Shared Components
+    │   │   ├── pom.xml
+    │   │   └── src/main/java/io/agentic/microagent/order/shared/
+    │   │       ├── constants/
+    │   │       ├── enums/
+    │   │       ├── exceptions/
+    │   │       ├── utils/
+    │   │       └── http/
+    │   │           ├── apis/
+    │   │           └── features/order-management/
+    │   │               ├── request/
+    │   │               └── response/
+    │   └── /order-test                             # ✅ Integration Tests
+    │       ├── pom.xml
+    │       └── src/test/java/io/agentic/microagent/order/test/
+    │
+    └── /agent-payment-service                      # Payment Management Specialist Agent
+        ├── pom.xml                                 # Parent POM for payment
+        ├── /payment-api                            # ✅ API Layer
+        │   ├── pom.xml
+        │   └── src/main/java/io/agentic/microagent/payment/api/features/
+        │       └── payment-management/
+        │           ├── mapper/
+        │           └── PaymentManagementController.java
+        ├── /payment-app                            # ✅ Application Entry
+        │   ├── pom.xml
+        │   ├── src/main/java/io/agentic/microagent/payment/app/
+        │   │   └── PaymentServiceApplication.java
+        │   └── src/main/resources/
+        │       └── application.yml
+        ├── /payment-core                           # ✅ Business Logic (CQRS)
+        │   ├── pom.xml
+        │   └── src/main/java/io/agentic/microagent/payment/core/features/
+        │       └── payment-management/
+        │           ├── constants/
+        │           ├── entities/
+        │           ├── mapper/
+        │           ├── request/
+        │           ├── service/
+        │           ├── utils/
+        │           ├── PaymentManagementCommandService.java
+        │           ├── PaymentManagementQueryService.java
+        │           └── PaymentManagementRepository.java
+        ├── /payment-data-access                    # ✅ Data Access Layer
+        │   ├── pom.xml
+        │   └── src/main/java/io/agentic/microagent/payment/dataaccess/
+        │       └── relational/
+        │           ├── payment-management/
+        │           │   ├── entities/
+        │           │   ├── mapper/
+        │           │   ├── repository/
+        │           │   └── PaymentManagementRepositoryImpl.java
+        │           └── RelationalDatabaseAccessConfig.java
+        ├── /payment-shared                         # ✅ Shared Components
+        │   ├── pom.xml
+        │   └── src/main/java/io/agentic/microagent/payment/shared/
+        │       ├── constants/
+        │       ├── enums/
+        │       ├── exceptions/
+        │       ├── utils/
+        │       └── http/
+        │           ├── apis/
+        │           └── features/payment-management/
+        │               ├── request/
+        │               └── response/
+        └── /payment-test                           # ✅ Integration Tests
+            ├── pom.xml
+            └── src/test/java/io/agentic/microagent/payment/test/
 ```
 
 ---
@@ -473,12 +633,16 @@ public record CreateAgentRegistrationRequest(String name, String capabilities) {
 
 ### Service Name Mapping
 
-| Microservice           | Service Name | Module Prefix |
-|------------------------|--------------|---------------|
-| agent-registry-service | `registry`   | `registry-*`  |
-| agent-policy-service   | `policy`     | `policy-*`    |
-| agent-demo             | `demo`       | `demo-*`      |
-| agent-{future}         | `{future}`   | `{future}-*`  |
+| Microservice                      | Service Name | Module Prefix | Description                                       |
+|-----------------------------------|--------------|---------------|---------------------------------------------------|
+| agent-brain                       | `brain`      | `brain-*`     | Orchestrator - Plans & coordinates agents         |
+| agent-registry-service            | `registry`   | `registry-*`  | Agent catalog & routing service                   |
+| agent-policy-service              | `policy`     | `policy-*`    | Policy governance & enforcement                   |
+| **agent-demo** (Parent Module)    | `demo`       | N/A           | Demo parent - Contains specialist agent services  |
+| └─ agent-user-service             | `user`       | `user-*`      | User management specialist agent                  |
+| └─ agent-order-service            | `order`      | `order-*`     | Order management specialist agent                 |
+| └─ agent-payment-service          | `payment`    | `payment-*`   | Payment management specialist agent               |
+| agent-{future}                    | `{future}`   | `{future}-*`  | Future microservices follow this pattern          |
 
 ---
 

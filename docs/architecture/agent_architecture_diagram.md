@@ -83,6 +83,247 @@
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
+## 1.2 AGENT POLICY GOVERNANCE ARCHITECTURE
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                    POLICY GOVERNANCE SYSTEM                             │
+│  (Controls agent behavior through unified policy framework)             │
+│                                                                          │
+│  ┌────────────────────────────────────────────────────────────────────┐│
+│  │                    Policy Management                                ││
+│  │  ┌──────────────────────────────────────────────────────────────┐  ││
+│  │  │  Policy Repository                                           │  ││
+│  │  │                                                               │  ││
+│  │  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │  ││
+│  │  │  │  PII         │  │ Brand        │  │   Ethics     │      │  ││
+│  │  │  │  Protection  │  │  Guidelines  │  │   Policy     │ ...  │  ││
+│  │  │  │  Policy      │  │  Policy      │  │              │      │  ││
+│  │  │  └──────────────┘  └──────────────┘  └──────────────┘      │  ││
+│  │  │                                                               │  ││
+│  │  │  Each Policy contains:                                       │  ││
+│  │  │  • policyId, name, description, status                       │  ││
+│  │  │  • content (policyStatement, llmPrompt, rules)               │  ││
+│  │  │  • tags (for categorization)                                 │  ││
+│  │  │  • enforcement config (phases, actions)                      │  ││
+│  │  │  • metadata (owner, version, audit trail)                    │  ││
+│  │  └──────────────────────────────────────────────────────────────┘  ││
+│  │                                                                      ││
+│  │  Three-Phase Enforcement:                                           ││
+│  │                                                                      ││
+│  │  PHASE 1: PRE-REQUEST VALIDATION                                    ││
+│  │  ├─ Validate user input against policies                            ││
+│  │  ├─ Check prohibited content                                        ││
+│  │  └─ Block/Warn violations before processing                         ││
+│  │                                                                      ││
+│  │  PHASE 2: DURING GENERATION (LLM Prompt Injection)                  ││
+│  │  ├─ Inject policy guidance into system prompt                       ││
+│  │  ├─ Guide LLM behavior with policy llmPrompt                        ││
+│  │  └─ Ensure compliant response generation                            ││
+│  │                                                                      ││
+│  │  PHASE 3: POST-RESPONSE VALIDATION                                  ││
+│  │  ├─ Scan generated response for violations                          ││
+│  │  ├─ Apply remediation (BLOCK, REDACT, WARN)                         ││
+│  │  └─ Log all violations to audit trail                               ││
+│  │                                                                      ││
+│  │  Storage: PostgreSQL with Markdown content                          ││
+│  │  ├─ TEXT columns for fast agent reads                               ││
+│  │  ├─ OWASP HTML Sanitizer for XSS prevention                         ││
+│  │  ├─ JSONB for structured rules and metadata                         ││
+│  │  └─ Full-text search on policy content                              ││
+│  └────────────────────────────────────────────────────────────────────┘│
+│                                                                          │
+│  Policy Enforcement Flow:                                               │
+│                                                                          │
+│  1. Load Active Policies → PolicyRepository.getActivePoliciesForAgent() │
+│  2. PRE-REQUEST → Validate input, block if violation                    │
+│  3. DURING-GENERATION → Inject policy prompts into LLM context          │
+│  4. Agent Processes Request → With policy-enhanced prompt               │
+│  5. POST-RESPONSE → Validate output, apply remediation                  │
+│  6. Audit Trail → Log all policy checks and violations                  │
+│  7. Response to User → Safe, compliant response                         │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+## 1.3 AGENT BRAIN ORCHESTRATION ARCHITECTURE
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                    AGENT BRAIN ORCHESTRATOR SYSTEM                      │
+│  (Central Coordinator - Plans, Executes, Coordinates Specialist Agents) │
+│                                                                          │
+│  ┌────────────────────────────────────────────────────────────────────┐│
+│  │                         Agent Brain                                 ││
+│  │  ┌──────────────────────────────────────────────────────────────┐  ││
+│  │  │  Orchestration Engine                                        │  ││
+│  │  │                                                               │  ││
+│  │  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │  ││
+│  │  │  │   Task      │  │   Agent     │  │  Execution  │         │  ││
+│  │  │  │   Planner   │  │ Coordinator │  │   Monitor   │         │  ││
+│  │  │  │             │  │             │  │             │         │  ││
+│  │  │  └─────────────┘  └─────────────┘  └─────────────┘         │  ││
+│  │  │         │                 │                 │                │  ││
+│  │  │         └─────────────────┴─────────────────┘                │  ││
+│  │  │                           ▼                                   │  ││
+│  │  │                 ┌──────────────────┐                         │  ││
+│  │  │                 │  Orchestration   │                         │  ││
+│  │  │                 │  Decision Maker  │                         │  ││
+│  │  │                 └──────────────────┘                         │  ││
+│  │  └──────────────────────────┬─────────────────────────────────  │  ││
+│  │                             │                                    │  ││
+│  │  Capabilities:              │                                    │  ││
+│  │  • Receive user requests                                        │  ││
+│  │  • Decompose complex tasks                                      │  ││
+│  │  • Plan multi-step workflows                                    │  ││
+│  │  • Discover & select specialist agents                          │  ││
+│  │  • Coordinate agent communication                               │  ││
+│  │  • Aggregate results                                            │  ││
+│  │  • Handle failures & retries                                    │  ││
+│  └────────────────────────────┬─────────────────────────────────────┘│
+│                               │                                        │
+│         ┌─────────────────────┼─────────────────────┐                │
+│         ▼                     ▼                     ▼                │
+│  ┌─────────────┐      ┌─────────────┐      ┌─────────────┐         │
+│  │   AGENT     │      │   AGENT     │      │   AGENT     │         │
+│  │   REGISTRY  │      │   POLICY    │      │  SPECIALIST │         │
+│  │             │      │             │      │   AGENTS    │         │
+│  └─────────────┘      └─────────────┘      └─────────────┘         │
+│         │                     │                     │                │
+│         │                     │                     │                │
+│  Discover agents       Load policies        Execute tasks           │
+│  & capabilities        & governance         in domain               │
+│                                                                       │
+│  Specialist Agents (Domain Experts):                                │
+│  ┌───────────────┐  ┌───────────────┐  ┌───────────────┐          │
+│  │  Agent User   │  │  Agent Order  │  │ Agent Payment │          │
+│  │               │  │               │  │               │          │
+│  │  Domain:      │  │  Domain:      │  │  Domain:      │          │
+│  │  - User mgmt  │  │  - Order mgmt │  │  - Payment    │          │
+│  │  - Profile    │  │  - Cart       │  │  - Billing    │          │
+│  │  - Auth       │  │  - Inventory  │  │  - Refund     │          │
+│  └───────────────┘  └───────────────┘  └───────────────┘          │
+└────────────────────────────────────────────────────────────────────┘
+```
+
+### Orchestration Flow:
+
+```
+USER REQUEST: "Create an order for John Doe and charge $100"
+     ↓
+┌────────────────────────────────────────────────────────────────┐
+│  1. Agent Brain receives request                               │
+└────────────────────────────────────────────────────────────────┘
+     ↓
+┌────────────────────────────────────────────────────────────────┐
+│  2. Task Decomposition                                         │
+│     → Sub-task 1: Verify user "John Doe" exists               │
+│     → Sub-task 2: Create order for user                       │
+│     → Sub-task 3: Process payment of $100                     │
+└────────────────────────────────────────────────────────────────┘
+     ↓
+┌────────────────────────────────────────────────────────────────┐
+│  3. Agent Selection (via Registry)                            │
+│     → Agent-User for user verification                        │
+│     → Agent-Order for order creation                          │
+│     → Agent-Payment for payment processing                    │
+└────────────────────────────────────────────────────────────────┘
+     ↓
+┌────────────────────────────────────────────────────────────────┐
+│  4. Policy Enforcement (via Policy Service)                   │
+│     → Load policies for each agent                            │
+│     → Validate request compliance                             │
+└────────────────────────────────────────────────────────────────┘
+     ↓
+┌────────────────────────────────────────────────────────────────┐
+│  5. Sequential Execution                                       │
+│     Step 1: Agent-User.verifyUser("John Doe") → SUCCESS       │
+│     Step 2: Agent-Order.createOrder(userId, items) → SUCCESS  │
+│     Step 3: Agent-Payment.charge(orderId, $100) → SUCCESS     │
+└────────────────────────────────────────────────────────────────┘
+     ↓
+┌────────────────────────────────────────────────────────────────┐
+│  6. Result Aggregation                                         │
+│     → Combine results from all agents                         │
+│     → Build final response                                     │
+└────────────────────────────────────────────────────────────────┘
+     ↓
+RESPONSE: "Order created successfully for John Doe, charged $100"
+```
+
+### Integration: Brain + Registry + Policy + Specialist Agents Flow
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│        COMPLETE REQUEST FLOW: Brain + Registry + Policy + Agents     │
+│                                                                        │
+│  USER REQUEST                                                         │
+│       ↓                                                               │
+│  ┌────────────────────────────┐                                      │
+│  │  1. Agent Brain            │                                      │
+│  │     Receives Request       │                                      │
+│  └─────────────┬──────────────┘                                      │
+│                ↓                                                      │
+│  ┌────────────────────────────┐                                      │
+│  │  2. Task Decomposition     │                                      │
+│  │     Break into sub-tasks   │                                      │
+│  └─────────────┬──────────────┘                                      │
+│                ↓                                                      │
+│  ┌────────────────────────────┐                                      │
+│  │  3. Agent Registry         │                                      │
+│  │     Discover & Select      │                                      │
+│  │     Specialist Agents      │                                      │
+│  └─────────────┬──────────────┘                                      │
+│                ↓                                                      │
+│         [Selected: User, Order, Payment Agents]                      │
+│                ↓                                                      │
+│  ┌────────────────────────────┐                                      │
+│  │  4. Policy Service         │                                      │
+│  │     Load Agent Policies    │                                      │
+│  └─────────────┬──────────────┘                                      │
+│                ↓                                                      │
+│  ┌────────────────────────────┐                                      │
+│  │  5. PRE-REQUEST Validation │                                      │
+│  │     Check policies         │                                      │
+│  └─────────────┬──────────────┘                                      │
+│                ↓                                                      │
+│         [Request Valid?]                                             │
+│           ↓         ↓                                                │
+│         YES        NO → BLOCK → Error Response                       │
+│           ↓                                                           │
+│  ┌────────────────────────────┐                                      │
+│  │  6. Sequential Execution   │                                      │
+│  │     via Agent Brain        │                                      │
+│  │                            │                                      │
+│  │  Task 1 → Agent-User       │                                      │
+│  │  Task 2 → Agent-Order      │                                      │
+│  │  Task 3 → Agent-Payment    │                                      │
+│  │                            │                                      │
+│  │  (Each with policy checks) │                                      │
+│  └─────────────┬──────────────┘                                      │
+│                ↓                                                      │
+│  ┌────────────────────────────┐                                      │
+│  │  7. POST-RESPONSE Check    │                                      │
+│  │     Validate & Remediate   │                                      │
+│  └─────────────┬──────────────┘                                      │
+│                ↓                                                      │
+│  ┌────────────────────────────┐                                      │
+│  │  8. Result Aggregation     │                                      │
+│  │     Combine Agent Results  │                                      │
+│  └─────────────┬──────────────┘                                      │
+│                ↓                                                      │
+│  ┌────────────────────────────┐                                      │
+│  │  9. Audit Trail Logging    │                                      │
+│  └─────────────┬──────────────┘                                      │
+│                ↓                                                      │
+│  ┌────────────────────────────┐                                      │
+│  │  10. Record Metrics        │                                      │
+│  │      to Agent Registry     │                                      │
+│  └─────────────┬──────────────┘                                      │
+│                ↓                                                      │
+│         RESPONSE TO USER                                             │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
 ### Agent Profile Structure
 
 ```

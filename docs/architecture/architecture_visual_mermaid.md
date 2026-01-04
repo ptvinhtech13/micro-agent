@@ -4,56 +4,71 @@
 
 ```mermaid
 graph TB
-    subgraph "AI Agent System"
-        subgraph "Agent Brain - Orchestrator"
-            CE[Context Engine]
-            RE[Reasoning Engine]
-            PE[Planning Engine]
-            DM[Decision Maker]
-            
-            CE --> DM
-            RE --> DM
-            PE --> DM
+    subgraph "MicroAgent Platform"
+        subgraph "Orchestration Layer"
+            BRAIN[Agent Brain Service<br/>Orchestrator]
         end
-        
-        subgraph "Memory System"
-            WM[Working Memory<br/>Redis]
-            EM[Episodic Memory<br/>Vector DB]
-            SM[Semantic Memory<br/>PostgreSQL]
-            PM[Procedural Memory<br/>Templates]
+
+        subgraph "Infrastructure Services"
+            REGISTRY[Agent Registry Service<br/>Agent Discovery]
+            POLICY[Agent Policy Service<br/>Governance]
         end
-        
-        subgraph "Tool System - MCP"
-            TR[Tool Registry]
-            IT[Internal Tools]
-            MCP[MCP Servers]
-            TE[Tool Executor]
-            
-            TR --> IT
-            TR --> MCP
-            TR --> TE
+
+        subgraph "Specialist Agents - Demo"
+            USER_AGENT[Agent User Service<br/>User Management]
+            ORDER_AGENT[Agent Order Service<br/>Order Management]
+            PAYMENT_AGENT[Agent Payment Service<br/>Payment Processing]
         end
-        
+
+        subgraph "Shared Infrastructure"
+            subgraph "Memory System"
+                REDIS[Redis<br/>Working Memory]
+                VECTOR[Vector DB<br/>Episodic Memory]
+                POSTGRES[PostgreSQL<br/>Semantic Memory & Policies]
+            end
+
+            subgraph "Event System"
+                KAFKA[Kafka<br/>Event Stream]
+            end
+
+            subgraph "Tool System - MCP"
+                MCP[MCP Servers<br/>External Integrations]
+            end
+        end
+
         subgraph "Communication Layer"
-            REST[REST API]
-            WS[WebSocket]
-            KAFKA[Kafka Events]
-            GRPC[gRPC]
+            API_GW[API Gateway<br/>REST/WebSocket]
         end
-        
-        DM --> WM
-        DM --> TE
-        CE --> WM
-        CE --> EM
-        CE --> SM
-        RE --> EM
-        TE --> REST
     end
-    
-    USER[User] --> REST
-    USER --> WS
-    MS[Other Microservices] --> KAFKA
-    MS --> GRPC
+
+    USER[User Requests] --> API_GW
+    API_GW --> BRAIN
+
+    BRAIN --> REGISTRY
+    BRAIN --> POLICY
+    BRAIN --> USER_AGENT
+    BRAIN --> ORDER_AGENT
+    BRAIN --> PAYMENT_AGENT
+
+    USER_AGENT --> REDIS
+    ORDER_AGENT --> REDIS
+    PAYMENT_AGENT --> REDIS
+
+    USER_AGENT --> POSTGRES
+    ORDER_AGENT --> POSTGRES
+    PAYMENT_AGENT --> POSTGRES
+
+    BRAIN --> VECTOR
+    REGISTRY --> POSTGRES
+    POLICY --> POSTGRES
+
+    USER_AGENT --> KAFKA
+    ORDER_AGENT --> KAFKA
+    PAYMENT_AGENT --> KAFKA
+
+    USER_AGENT --> MCP
+    ORDER_AGENT --> MCP
+    PAYMENT_AGENT --> MCP
 ```
 
 ## 2. Data Flow Sequence Diagram
@@ -61,33 +76,79 @@ graph TB
 ```mermaid
 sequenceDiagram
     participant User
-    participant API as Communication Layer
-    participant CE as Context Engine
-    participant MM as Memory Manager
-    participant RE as Reasoning Engine
-    participant TE as Tool Executor
-    participant MCP as MCP Server
-    
-    User->>API: Send Message
-    API->>CE: Build Context
-    CE->>MM: Retrieve Memories
-    MM-->>CE: Working + Episodic + Semantic
-    
-    CE->>RE: Analyze Intent
-    RE->>RE: Classify & Plan
-    
-    alt Tool Required
-        RE->>TE: Execute Tool
-        TE->>MCP: Call External Tool
-        MCP-->>TE: Tool Result
-        TE-->>RE: Execution Result
-    else No Tool
-        RE->>RE: Generate Direct Response
+    participant Brain as Agent Brain
+    participant Registry as Agent Registry
+    participant Policy as Policy Service
+    participant UserAgent as Agent User
+    participant OrderAgent as Agent Order
+    participant PaymentAgent as Agent Payment
+    participant Memory as Memory System
+    participant MCP as MCP Servers
+    participant Audit as Audit Trail
+
+    User->>Brain: Send Request
+    Brain->>Brain: Analyze & Decompose Task
+
+    Brain->>Registry: Discover Required Agents
+    Registry-->>Brain: Agent Profiles (User, Order, Payment)
+
+    Brain->>Policy: Load Policies for Agents
+    Policy-->>Brain: Policy Rules
+
+    Brain->>Policy: PRE-REQUEST Validation
+    Policy->>Policy: Check Compliance
+
+    alt Violation Detected
+        Policy->>Audit: Log Violation
+        Policy-->>Brain: BLOCK Response
+        Brain-->>User: Error Response
+    else Request Valid
+        Brain->>Memory: Retrieve Context
+        Memory-->>Brain: User History & Context
+
+        par Execute Specialist Agent Tasks
+            Brain->>UserAgent: Task 1: Verify User
+            activate UserAgent
+            UserAgent->>Memory: Get User Data
+            UserAgent->>MCP: Call Auth Service
+            MCP-->>UserAgent: Auth Result
+            UserAgent-->>Brain: Task 1 Complete
+            deactivate UserAgent
+
+            Brain->>OrderAgent: Task 2: Create Order
+            activate OrderAgent
+            OrderAgent->>Memory: Get Order Data
+            OrderAgent->>MCP: Call Inventory System
+            MCP-->>OrderAgent: Inventory Result
+            OrderAgent-->>Brain: Task 2 Complete
+            deactivate OrderAgent
+
+            Brain->>PaymentAgent: Task 3: Process Payment
+            activate PaymentAgent
+            PaymentAgent->>MCP: Call Payment Gateway
+            MCP-->>PaymentAgent: Payment Result
+            PaymentAgent-->>Brain: Task 3 Complete
+            deactivate PaymentAgent
+        end
+
+        Brain->>Brain: Aggregate Results
+
+        Brain->>Policy: POST-RESPONSE Validation
+        Policy->>Policy: Check Response Compliance
+
+        alt Response Violation
+            Policy->>Audit: Log Violation
+            Policy->>Policy: Apply Remediation
+        end
+
+        Policy->>Audit: Log All Policy Checks
+        Policy-->>Brain: Validated Response
+
+        Brain->>Memory: Store Conversation
+        Brain->>Registry: Record Metrics
+
+        Brain-->>User: Final Response
     end
-    
-    RE->>MM: Store Memory
-    RE->>API: Format Response
-    API-->>User: Return Response
 ```
 
 ## 3. Memory System Architecture
@@ -122,60 +183,107 @@ graph LR
 
 ```mermaid
 graph TB
+    subgraph "Specialist Agents"
+        USER_AGENT[Agent User]
+        ORDER_AGENT[Agent Order]
+        PAYMENT_AGENT[Agent Payment]
+    end
+
     subgraph "Tool System"
         TR[Tool Registry]
-        
-        subgraph "Internal Tools"
-            T1[Database Query]
-            T2[File Operations]
-            T3[Calculations]
+
+        subgraph "Domain-Specific Tools"
+            subgraph "User Tools"
+                UT1[Auth Service]
+                UT2[Profile Manager]
+                UT3[User Validator]
+            end
+
+            subgraph "Order Tools"
+                OT1[Inventory System]
+                OT2[Cart Manager]
+                OT3[Order Processor]
+            end
+
+            subgraph "Payment Tools"
+                PT1[Payment Gateway]
+                PT2[Billing Service]
+                PT3[Refund Processor]
+            end
         end
-        
+
         subgraph "MCP Servers"
-            MCP1[GitHub MCP]
-            MCP2[Slack MCP]
-            MCP3[Custom API MCP]
+            MCP1[Email MCP]
+            MCP2[SMS MCP]
+            MCP3[Analytics MCP]
         end
-        
-        TR --> T1
-        TR --> T2
-        TR --> T3
+
+        TR --> UT1
+        TR --> UT2
+        TR --> UT3
+        TR --> OT1
+        TR --> OT2
+        TR --> OT3
+        TR --> PT1
+        TR --> PT2
+        TR --> PT3
         TR --> MCP1
         TR --> MCP2
         TR --> MCP3
     end
-    
-    LLM[LLM/Reasoning Engine] -->|Discover Tools| TR
-    LLM -->|Select Tool| EXECUTOR[Tool Executor]
-    EXECUTOR -->|Execute| TR
-    TR -->|Return Result| LLM
+
+    USER_AGENT -->|Discover & Execute| TR
+    ORDER_AGENT -->|Discover & Execute| TR
+    PAYMENT_AGENT -->|Discover & Execute| TR
 ```
 
-## 5. Reasoning Engine Flow
+## 5. Agent Brain Orchestration Flow
 
 ```mermaid
 flowchart TD
-    START[User Message] --> INTENT[Intent Classification]
-    INTENT --> QUERY{Intent Type?}
-    
-    QUERY -->|QUERY| RETRIEVE[Retrieve Information]
-    QUERY -->|ACTION| PLAN[Create Action Plan]
-    QUERY -->|CONVERSATION| GENERATE[Direct Response]
-    
-    RETRIEVE --> DECIDE[Decision Making]
-    PLAN --> DECOMPOSE[Task Decomposition]
-    DECOMPOSE --> SELECT[Tool Selection]
-    SELECT --> DECIDE
-    
-    DECIDE --> EXECUTE{Execute Plan}
-    EXECUTE -->|Success| SYNTHESIZE[Synthesize Result]
-    EXECUTE -->|Failure| RETRY{Retry?}
-    
-    RETRY -->|Yes| PLAN
-    RETRY -->|No| ERROR[Error Response]
-    
-    SYNTHESIZE --> RESPONSE[Final Response]
-    GENERATE --> RESPONSE
+    START[User Request] --> BRAIN[Agent Brain Receives Request]
+    BRAIN --> ANALYZE[Analyze Request Intent]
+
+    ANALYZE --> COMPLEX{Complex<br/>Multi-Step Task?}
+
+    COMPLEX -->|Yes| DECOMPOSE[Task Decomposition]
+    COMPLEX -->|No| SIMPLE[Single Agent Task]
+
+    DECOMPOSE --> IDENTIFY[Identify Required Agents]
+    IDENTIFY --> DISCOVER[Discover from Registry]
+
+    DISCOVER --> AGENTS{Which Agents?}
+
+    AGENTS -->|User Operations| USER_AGENT[Agent User]
+    AGENTS -->|Order Operations| ORDER_AGENT[Agent Order]
+    AGENTS -->|Payment Operations| PAYMENT_AGENT[Agent Payment]
+
+    SIMPLE --> AGENTS
+
+    USER_AGENT --> EXECUTE_USER[Execute User Tasks]
+    ORDER_AGENT --> EXECUTE_ORDER[Execute Order Tasks]
+    PAYMENT_AGENT --> EXECUTE_PAY[Execute Payment Tasks]
+
+    EXECUTE_USER --> CHECK{All Tasks<br/>Complete?}
+    EXECUTE_ORDER --> CHECK
+    EXECUTE_PAY --> CHECK
+
+    CHECK -->|No| NEXT[Next Task in Sequence]
+    NEXT --> AGENTS
+
+    CHECK -->|Yes| AGGREGATE[Aggregate Results]
+
+    AGGREGATE --> VALIDATE[Validate Against Policies]
+
+    VALIDATE --> SUCCESS{Success?}
+
+    SUCCESS -->|Yes| SYNTHESIZE[Synthesize Final Response]
+    SUCCESS -->|No, Recoverable| RETRY[Retry Failed Tasks]
+    SUCCESS -->|No, Fatal| ERROR[Error Response]
+
+    RETRY --> AGENTS
+
+    SYNTHESIZE --> RESPONSE[Final Response to User]
     ERROR --> RESPONSE
 ```
 
@@ -258,25 +366,43 @@ flowchart TD
 
 ```mermaid
 graph TB
-    USER[User Request] --> ROUTER[Agent Router]
-    
-    ROUTER --> CLASSIFY{Classify Domain}
-    
-    CLASSIFY -->|Banking| BA[Banking Agent]
-    CLASSIFY -->|Food Order| FA[F&B Agent]
-    CLASSIFY -->|General| GA[General Agent]
-    CLASSIFY -->|Unknown| DA[Default Agent]
-    
-    BA --> TOOLS1[Banking Tools<br/>Account, Transfer, etc.]
-    FA --> TOOLS2[Restaurant Tools<br/>Menu, Order, etc.]
-    GA --> TOOLS3[General Tools<br/>Search, Calculate, etc.]
-    
-    TOOLS1 --> EXEC[Execute]
-    TOOLS2 --> EXEC
-    TOOLS3 --> EXEC
-    
-    EXEC --> RESPONSE[Response]
-    DA --> RESPONSE
+    USER[User Request] --> BRAIN[Agent Brain<br/>Orchestrator]
+
+    BRAIN --> DECOMPOSE{Task<br/>Decomposition}
+
+    DECOMPOSE --> REGISTRY[Agent Registry<br/>Discover Agents]
+
+    REGISTRY --> AGENTS{Available<br/>Specialist Agents}
+
+    AGENTS -->|User Domain| USER_AGENT[Agent User<br/>User Management]
+    AGENTS -->|Order Domain| ORDER_AGENT[Agent Order<br/>Order Management]
+    AGENTS -->|Payment Domain| PAY_AGENT[Agent Payment<br/>Payment Processing]
+    AGENTS -->|General Domain| GEN_AGENT[General Agent<br/>Fallback]
+
+    USER_AGENT --> POL_USER[Load User<br/>Policies]
+    ORDER_AGENT --> POL_ORDER[Load Order<br/>Policies]
+    PAY_AGENT --> POL_PAY[Load Payment<br/>Policies]
+
+    POL_USER --> EXEC_USER[Execute<br/>User Tasks]
+    POL_ORDER --> EXEC_ORDER[Execute<br/>Order Tasks]
+    POL_PAY --> EXEC_PAY[Execute<br/>Payment Tasks]
+
+    EXEC_USER --> COORD[Agent Brain<br/>Coordination]
+    EXEC_ORDER --> COORD
+    EXEC_PAY --> COORD
+    GEN_AGENT --> COORD
+
+    COORD --> AGGREGATE[Result<br/>Aggregation]
+
+    AGGREGATE --> POLICY_CHECK[POST-RESPONSE<br/>Policy Validation]
+
+    POLICY_CHECK --> AUDIT[Audit Trail<br/>Logging]
+
+    AUDIT --> METRICS[Record Metrics<br/>to Registry]
+
+    METRICS --> RESPONSE[Final Response]
+
+    RESPONSE --> USER
 ```
 
 ## 9. Observability & Monitoring
@@ -327,48 +453,352 @@ graph TD
 ```mermaid
 graph TB
     subgraph "Kubernetes Cluster"
-        subgraph "Agent Pods"
-            A1[Agent Instance 1]
-            A2[Agent Instance 2]
-            A3[Agent Instance 3]
+        subgraph "Microservices"
+            subgraph "Orchestration Layer"
+                BRAIN1[Agent Brain 1]
+                BRAIN2[Agent Brain 2]
+            end
+
+            subgraph "Infrastructure Services"
+                REG1[Registry Instance 1]
+                REG2[Registry Instance 2]
+                POL1[Policy Instance 1]
+                POL2[Policy Instance 2]
+            end
+
+            subgraph "Specialist Agents"
+                USER1[Agent User 1]
+                USER2[Agent User 2]
+                ORDER1[Agent Order 1]
+                ORDER2[Agent Order 2]
+                PAY1[Agent Payment 1]
+                PAY2[Agent Payment 2]
+            end
         end
-        
+
         subgraph "Data Layer"
             REDIS[(Redis<br/>Working Memory)]
-            POSTGRES[(PostgreSQL<br/>Semantic Memory)]
+            POSTGRES[(PostgreSQL<br/>Policies & Data)]
             VECTOR[(Vector DB<br/>Episodic Memory)]
         end
-        
+
         subgraph "Message Queue"
             KAFKA[(Kafka<br/>Event Stream)]
         end
-        
+
         LB[Load Balancer]
-        
-        LB --> A1
-        LB --> A2
-        LB --> A3
-        
-        A1 --> REDIS
-        A2 --> REDIS
-        A3 --> REDIS
-        
-        A1 --> POSTGRES
-        A2 --> POSTGRES
-        A3 --> POSTGRES
-        
-        A1 --> VECTOR
-        A2 --> VECTOR
-        A3 --> VECTOR
-        
-        A1 --> KAFKA
-        A2 --> KAFKA
-        A3 --> KAFKA
+
+        LB --> BRAIN1
+        LB --> BRAIN2
+
+        BRAIN1 --> REG1
+        BRAIN2 --> REG2
+
+        BRAIN1 --> POL1
+        BRAIN2 --> POL2
+
+        BRAIN1 --> USER1
+        BRAIN1 --> ORDER1
+        BRAIN1 --> PAY1
+        BRAIN2 --> USER2
+        BRAIN2 --> ORDER2
+        BRAIN2 --> PAY2
+
+        REG1 --> POSTGRES
+        REG2 --> POSTGRES
+        POL1 --> POSTGRES
+        POL2 --> POSTGRES
+
+        USER1 --> POSTGRES
+        USER2 --> POSTGRES
+        ORDER1 --> POSTGRES
+        ORDER2 --> POSTGRES
+        PAY1 --> POSTGRES
+        PAY2 --> POSTGRES
+
+        BRAIN1 --> REDIS
+        BRAIN2 --> REDIS
+        USER1 --> REDIS
+        USER2 --> REDIS
+        ORDER1 --> REDIS
+        ORDER2 --> REDIS
+
+        BRAIN1 --> VECTOR
+        BRAIN2 --> VECTOR
+
+        BRAIN1 --> KAFKA
+        BRAIN2 --> KAFKA
+        USER1 --> KAFKA
+        USER2 --> KAFKA
+        ORDER1 --> KAFKA
+        ORDER2 --> KAFKA
+        PAY1 --> KAFKA
+        PAY2 --> KAFKA
     end
-    
+
     EXTERNAL[External Services] --> LB
-    MCP[MCP Servers] --> A1
-    MCP --> A2
-    MCP --> A3
+    MCP[MCP Servers] --> USER1
+    MCP --> USER2
+    MCP --> ORDER1
+    MCP --> ORDER2
+    MCP --> PAY1
+    MCP --> PAY2
+```
+
+## 11. Agent Registry Architecture
+
+```mermaid
+graph TB
+    subgraph "Agent Registry System"
+        subgraph "API Layer"
+            REGAPI[Registry REST API]
+        end
+
+        subgraph "Core Services"
+            REG[Agent Registry Service]
+            ROUTER[Agent Router]
+            HEALTH[Health Monitor]
+            METRICS[Metrics Collector]
+        end
+
+        subgraph "Agent Catalog"
+            PROFILES[(Agent Profiles)]
+
+            BANK[Banking Agent<br/>Profile]
+            HEALTH_A[Healthcare Agent<br/>Profile]
+            GEN[General Agent<br/>Profile]
+
+            PROFILES --> BANK
+            PROFILES --> HEALTH_A
+            PROFILES --> GEN
+        end
+
+        subgraph "Operations"
+            REGISTER[Register Agent]
+            SELECT[Select Agent]
+            DISCOVER[Discover Agents]
+            LIFECYCLE[Lifecycle Mgmt]
+        end
+    end
+
+    subgraph "Agent Instances"
+        A1[Banking Agent]
+        A2[Healthcare Agent]
+        A3[General Agent]
+    end
+
+    USER[User Request] --> REGAPI
+    REGAPI --> REG
+
+    REG --> REGISTER
+    REG --> SELECT
+    REG --> DISCOVER
+    REG --> LIFECYCLE
+
+    REGISTER --> PROFILES
+    SELECT --> PROFILES
+    DISCOVER --> PROFILES
+    LIFECYCLE --> PROFILES
+
+    SELECT --> ROUTER
+    ROUTER --> A1
+    ROUTER --> A2
+    ROUTER --> A3
+
+    A1 --> METRICS
+    A2 --> METRICS
+    A3 --> METRICS
+
+    A1 --> HEALTH
+    A2 --> HEALTH
+    A3 --> HEALTH
+
+    HEALTH --> PROFILES
+    METRICS --> PROFILES
+```
+
+## 12. Policy Governance Architecture
+
+```mermaid
+graph TB
+    subgraph "Policy Governance System"
+        subgraph "API Layer"
+            POLAPI[Policy Management API]
+        end
+
+        subgraph "Core Services"
+            POLMGMT[Policy Management Service]
+            ENFORCE[Policy Enforcement Engine]
+            TAGMGMT[Tag Management Service]
+            AUDIT[Audit Trail Service]
+        end
+
+        subgraph "Policy Repository"
+            POLICIES[(Policy Database<br/>PostgreSQL)]
+
+            PII[PII Protection<br/>Policy]
+            BRAND[Brand Guidelines<br/>Policy]
+            ETHICS[Ethics<br/>Policy]
+
+            POLICIES --> PII
+            POLICIES --> BRAND
+            POLICIES --> ETHICS
+        end
+
+        subgraph "Enforcement Phases"
+            PRE[PRE-REQUEST<br/>Validation]
+            DURING[DURING-GENERATION<br/>Prompt Injection]
+            POST[POST-RESPONSE<br/>Validation]
+        end
+
+        subgraph "Actions"
+            BLOCK[BLOCK]
+            REDACT[REDACT]
+            WARN[WARN]
+        end
+    end
+
+    subgraph "Storage Strategy"
+        SANITIZE[OWASP HTML<br/>Sanitizer]
+        TEXTCOL[TEXT Columns<br/>for Markdown]
+        JSONBCOL[JSONB Columns<br/>for Rules]
+        FTS[Full-Text Search<br/>GIN Index]
+    end
+
+    REQUEST[Agent Request] --> ENFORCE
+
+    ENFORCE --> PRE
+    ENFORCE --> DURING
+    ENFORCE --> POST
+
+    PRE --> POLICIES
+    DURING --> POLICIES
+    POST --> POLICIES
+
+    PRE --> BLOCK
+    PRE --> WARN
+    POST --> BLOCK
+    POST --> REDACT
+    POST --> WARN
+
+    POLMGMT --> SANITIZE
+    SANITIZE --> TEXTCOL
+    SANITIZE --> JSONBCOL
+    TEXTCOL --> POLICIES
+    JSONBCOL --> POLICIES
+
+    POLICIES --> FTS
+
+    PRE --> AUDIT
+    POST --> AUDIT
+
+    POLAPI --> POLMGMT
+    POLAPI --> TAGMGMT
+```
+
+## 13. Agent Brain Orchestration Architecture
+
+```mermaid
+graph TB
+    subgraph "Agent Brain Orchestration System"
+        subgraph "Orchestration Engine"
+            BRAIN[Agent Brain Service]
+            PLANNER[Task Planner]
+            COORDINATOR[Agent Coordinator]
+            MONITOR[Execution Monitor]
+            AGGREGATOR[Result Aggregator]
+        end
+
+        subgraph "Supporting Services"
+            REGISTRY[Agent Registry]
+            POLICY[Policy Service]
+        end
+
+        subgraph "Specialist Agents"
+            USER_AGENT[Agent User<br/>User Management]
+            ORDER_AGENT[Agent Order<br/>Order Management]
+            PAYMENT_AGENT[Agent Payment<br/>Payment Processing]
+        end
+    end
+
+    REQUEST[User Request] --> BRAIN
+
+    BRAIN --> PLANNER
+    PLANNER --> COORDINATOR
+
+    COORDINATOR --> REGISTRY
+    REGISTRY --> COORDINATOR
+
+    COORDINATOR --> POLICY
+    POLICY --> COORDINATOR
+
+    COORDINATOR --> USER_AGENT
+    COORDINATOR --> ORDER_AGENT
+    COORDINATOR --> PAYMENT_AGENT
+
+    USER_AGENT --> AGGREGATOR
+    ORDER_AGENT --> AGGREGATOR
+    PAYMENT_AGENT --> AGGREGATOR
+
+    AGGREGATOR --> MONITOR
+    MONITOR --> RESPONSE[Response to User]
+```
+
+## 14. Brain + Registry + Policy + Specialist Agents Integration Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Brain as Agent Brain
+    participant Registry as Agent Registry
+    participant Policy as Policy Service
+    participant UserAgent as Agent User
+    participant OrderAgent as Agent Order
+    participant PaymentAgent as Agent Payment
+    participant Audit as Audit Trail
+    participant Metrics as Metrics Service
+
+    User->>Brain: 1. Send Request
+    Brain->>Brain: 2. Task Decomposition<br/>(break into sub-tasks)
+
+    Brain->>Registry: 3. Discover Agents<br/>(User, Order, Payment)
+    Registry-->>Brain: Agent Profiles
+
+    Brain->>Policy: 4. Load Policies<br/>for all agents
+    Policy-->>Brain: Agent Policies
+
+    Brain->>Policy: 5. PRE-REQUEST Validation
+    Policy->>Policy: Check Compliance
+
+    alt Violation Detected
+        Policy->>Audit: Log Violation
+        Policy-->>Brain: BLOCK Response
+        Brain-->>User: Error Response
+    else Request Valid
+        Brain->>UserAgent: 6. Execute Task 1<br/>(Verify User)
+        UserAgent-->>Brain: Task 1 Result
+
+        Brain->>OrderAgent: 7. Execute Task 2<br/>(Create Order)
+        OrderAgent-->>Brain: Task 2 Result
+
+        Brain->>PaymentAgent: 8. Execute Task 3<br/>(Process Payment)
+        PaymentAgent-->>Brain: Task 3 Result
+
+        Brain->>Brain: 9. Aggregate Results
+
+        Brain->>Policy: 10. POST-RESPONSE Validation
+        Policy->>Policy: Check Response
+
+        alt Response Violation
+            Policy->>Policy: Apply Remediation
+            Policy->>Audit: Log Violation
+        end
+
+        Policy->>Audit: 11. Log All Checks
+        Policy-->>Brain: Validated Response
+
+        Brain->>Metrics: 12. Record Metrics
+        Brain-->>User: 13. Final Response
+    end
 ```
 

@@ -19,6 +19,7 @@
 
     <modules>
         <module>agentic-framework</module>
+        <module>agent-brain</module>
         <module>agent-registry-service</module>
         <module>agent-policy-service</module>
         <module>agent-demo</module>
@@ -38,27 +39,95 @@
     <dependencyManagement>
         <dependencies>
 
-            <!-- Agent Demo Service Modules -->
+            <!-- Agent Brain Service Modules -->
             <dependency>
-                <groupId>io.agentic.microagent.demo</groupId>
-                <artifactId>demo-api</artifactId>
+                <groupId>io.agentic.microagent.brain</groupId>
+                <artifactId>brain-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.agentic.microagent.demo</groupId>
-                <artifactId>demo-core</artifactId>
+                <groupId>io.agentic.microagent.brain</groupId>
+                <artifactId>brain-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.agentic.microagent.demo</groupId>
-                <artifactId>demo-data-access</artifactId>
+                <groupId>io.agentic.microagent.brain</groupId>
+                <artifactId>brain-data-access</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.agentic.microagent.demo</groupId>
-                <artifactId>demo-shared</artifactId>
+                <groupId>io.agentic.microagent.brain</groupId>
+                <artifactId>brain-shared</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
+            <!-- Agent Demo - Specialist Agent Services (under agent-demo/) -->
+            <!-- Agent Order Service Modules (agent-demo/agent-order-service) -->
+            <dependency>
+                <groupId>io.agentic.microagent.order</groupId>
+                <artifactId>order-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.order</groupId>
+                <artifactId>order-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.order</groupId>
+                <artifactId>order-data-access</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.order</groupId>
+                <artifactId>order-shared</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Agent Payment Service Modules (agent-demo/agent-payment-service) -->
+            <dependency>
+                <groupId>io.agentic.microagent.payment</groupId>
+                <artifactId>payment-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.payment</groupId>
+                <artifactId>payment-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.payment</groupId>
+                <artifactId>payment-data-access</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.payment</groupId>
+                <artifactId>payment-shared</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Agent User Service Modules (agent-demo/agent-user-service) -->
+            <dependency>
+                <groupId>io.agentic.microagent.user</groupId>
+                <artifactId>user-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.user</groupId>
+                <artifactId>user-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.user</groupId>
+                <artifactId>user-data-access</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.agentic.microagent.user</groupId>
+                <artifactId>user-shared</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <!-- Agentic Framework Modules -->
             <dependency>
                 <groupId>io.agentic.microagent.framework</groupId>

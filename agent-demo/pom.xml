@@ -13,14 +13,11 @@
     <packaging>pom</packaging>
 
     <name>Agent Demo</name>
-    <description>Agent demonstration service</description>
+    <description>Demo parent module - Contains specialist agent services for demonstration</description>
 
     <modules>
-        <module>demo-api</module>
-        <module>demo-app</module>
-        <module>demo-core</module>
-        <module>demo-data-access</module>
-        <module>demo-shared</module>
-        <module>demo-test</module>
+        <module>agent-user-service</module>
+        <module>agent-order-service</module>
+        <module>agent-payment-service</module>
     </modules>
 </project>
