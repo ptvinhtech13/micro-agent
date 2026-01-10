@@ -5,7 +5,8 @@
       "Bash(rm:*)",
       "Bash(tree:*)",
       "WebSearch",
-      "Bash(mvn validate:*)"
+      "Bash(mvn validate:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": [],
     "ask": []
