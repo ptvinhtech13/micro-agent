@@ -49,6 +49,17 @@ Validate interfaces and implementations against architecture specs.
 
 ---
 
+### `/new-api-doc`
+Generate comprehensive API documentation using standardized template.
+- Creates sequence diagrams with microservice boundaries
+- Generates pseudocode for processing steps
+- Includes validation rules and timing expectations
+- Follows Edge auth/authz pattern
+
+**Usage:** `/new-api-doc` (then answer questions about your API)
+
+---
+
 ## Creating Your Own Commands
 
 1. Create a new `.md` file in this folder
@@ -72,6 +83,9 @@ See `GUIDE.md` for detailed instructions and best practices.
 
 # Validate your interfaces
 /validate-interfaces
+
+# Generate API documentation
+/new-api-doc
 ```
 
 ## Tips
