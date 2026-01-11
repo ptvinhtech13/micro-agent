@@ -9,10 +9,72 @@
 ## Instructions for Claude
 
 When this command is invoked:
-1. Ask the user questions Q1-Q10 (see below)
-2. Use the user's answers to fill in the FULL TEMPLATE (see bottom of this file)
-3. Write the complete documentation to the path specified in Q10
-4. DO NOT reference external files - everything is self-contained here
+1. **Review REST API Conventions**: Familiarize yourself with the MicroAgent REST API conventions documented in `/docs/knowledge-base/coding-conventions/rest-api-conventions.md`
+2. **Validate Endpoint Design**: Before asking questions, validate that the endpoint follows REST conventions:
+   - Uses plural nouns for resources (e.g., `/agents`, not `/agent`)
+   - Uses kebab-case for multi-word resources (e.g., `/agent-profiles`)
+   - Uses appropriate HTTP methods (POST for create, GET for read, PUT for full update, PATCH for partial update, DELETE for delete)
+   - Includes API versioning (e.g., `/api/v1/`)
+   - Uses path parameters for resource identifiers
+   - Uses query parameters for filtering, sorting, and pagination
+3. **Ask the user questions Q1-Q10** (see below)
+4. **Apply REST Conventions** when generating documentation:
+   - Ensure HTTP status codes follow conventions (201 for POST, 200 for GET/PUT/PATCH, 204 for DELETE)
+   - Include proper pagination structure for list endpoints (page, size, sort, direction)
+   - Follow error response standards (errorCode, message, timestamp, path)
+   - Use camelCase for all field names in requests and responses
+5. **Use the user's answers to fill in the FULL TEMPLATE** (see bottom of this file)
+6. **Write the complete documentation** to the path specified in Q10
+7. **DO NOT reference external files** - everything is self-contained here
+
+---
+
+## REST API Conventions Quick Reference
+
+**Before designing any API, ensure it follows these mandatory conventions:**
+
+### Resource Naming
+- ✅ Use plural nouns: `/agents`, `/tasks`, `/capabilities`
+- ✅ Use kebab-case: `/agent-profiles`, `/task-executions`
+- ✅ Use lowercase URLs
+- ❌ No verbs: `/createAgent`, `/getAgents`
+- ❌ No underscores: `/agent_profiles`
+
+### HTTP Methods & Status Codes
+| Operation | Method | Success Status | Example |
+|-----------|--------|----------------|---------|
+| Create | POST | 201 Created | `POST /api/v1/agents` |
+| Read One | GET | 200 OK | `GET /api/v1/agents/{id}` |
+| Read All | GET | 200 OK | `GET /api/v1/agents?page=0&size=20&filter.byStatuses=ACTIVE` |
+| Update Full | PUT | 200 OK | `PUT /api/v1/agents/{id}` |
+| Update Partial | PATCH | 200 OK | `PATCH /api/v1/agents/{id}` |
+| Delete | DELETE | 204 No Content | `DELETE /api/v1/agents/{id}` |
+
+### Pagination (Required for List Endpoints)
+- Use `page` (0-indexed), `size` (default: 20), `sort` (field names), `direction` (asc/desc)
+- Return `PageResponse` with metadata: `{content: [], totalElements, currentPage, totalPages}`
+
+### Filtering (Required Convention)
+- **ALWAYS** prefix filter parameters with `filter.by{FieldName}`
+- Use singular for single values: `filter.byStatus`, `filter.byDomain`
+- Use plural for arrays/multiple values: `filter.byStatuses`, `filter.byTags`
+- Examples:
+  - `GET /api/v1/agents?filter.byStatuses=ACTIVE,INACTIVE`
+  - `GET /api/v1/agents?filter.byDomain=ecommerce&filter.byOwnerId=user-123`
+
+### Error Response Structure
+```json
+{
+  "errorCode": "RESOURCE_NOT_FOUND",
+  "message": "Resource not found with ID: xyz",
+  "timestamp": "2026-01-11T10:30:00Z",
+  "path": "/api/v1/agents/xyz"
+}
+```
+
+### Field Naming
+- ✅ Use camelCase for all field names: `agentId`, `createdAt`, `userName`
+- ❌ No snake_case: `agent_id`, `created_at`
 
 ---
 
@@ -44,10 +106,24 @@ Examples:
 ### Q4: Endpoint
 **HTTP method and endpoint path?**
 
+**IMPORTANT**: Validate that the endpoint follows REST conventions:
+- ✅ Uses plural nouns for resources: `/agents`, `/tasks`
+- ✅ Uses kebab-case for multi-word resources: `/agent-profiles`
+- ✅ Includes API versioning: `/api/v1/`
+- ✅ Uses appropriate HTTP method for operation
+- ✅ Uses path parameters for IDs: `{agentId}`, `{taskId}`
+- ✅ Uses query parameters for filtering/pagination (not in path)
+
 Examples:
-- `POST /api/v1/agents`
-- `GET /api/v1/agents/{agentId}/profile`
-- `PATCH /api/v1/agents/{agentId}/status`
+- `POST /api/v1/agents` (Create - uses plural noun)
+- `GET /api/v1/agents/{agentId}` (Read one - ID in path)
+- `GET /api/v1/agents?page=0&size=20&filter.byStatuses=ACTIVE` (Read all - filters use filter.by prefix)
+- `PUT /api/v1/agents/{agentId}` (Full update)
+- `PATCH /api/v1/agents/{agentId}` (Partial update)
+- `DELETE /api/v1/agents/{agentId}` (Delete)
+- `POST /api/v1/agents/{agentId}/activate` (Custom action)
+
+**If endpoint doesn't follow conventions, suggest the correct format to the user before proceeding.**
 
 ### Q5: Purpose
 **One-line purpose?**

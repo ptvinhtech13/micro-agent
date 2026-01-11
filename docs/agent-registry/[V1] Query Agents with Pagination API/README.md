@@ -93,8 +93,6 @@ sequenceDiagram
 
     Note over Service: Step 7: Build Response Metadata
     Service->>Service: Calculate totalPages = ceil(totalElements / size)
-    Service->>Service: Determine hasNext = page < totalPages - 1
-    Service->>Service: Determine hasPrevious = page > 0
 
     Note over Service: Step 8: Map to DTO
     Service->>Service: Map AgentProfile to AgentProfileDTO
@@ -103,7 +101,7 @@ sequenceDiagram
 
     Note over Controller: Step 9: Build Response
     Controller->>Controller: Build pagination metadata
-    Controller-->>Client: 200 OK<br/>{content, page, size, totalElements, totalPages}
+    Controller-->>Client: 200 OK<br/>{content, totalElements, currentPage, totalPages}
 
     end
 ```
@@ -196,10 +194,6 @@ FUNCTION queryAgents(queryParams, userContext):
 
     // Step 7: Build Response Metadata
     totalPages = CEIL(totalElements / size)
-    hasNext = (page < totalPages - 1)
-    hasPrevious = (page > 0)
-    isFirst = (page == 0)
-    isLast = (page == totalPages - 1) OR (totalElements == 0)
 
     // Step 8: Map to DTO
     agentDTOs = []
@@ -226,16 +220,9 @@ FUNCTION queryAgents(queryParams, userContext):
     // Step 9: Build Response
     response = {
         content: agentDTOs,
-        page: {
-            number: page,
-            size: size,
-            totalElements: totalElements,
-            totalPages: totalPages
-        },
-        first: isFirst,
-        last: isLast,
-        hasNext: hasNext,
-        hasPrevious: hasPrevious
+        totalElements: totalElements,
+        currentPage: page,
+        totalPages: totalPages
     }
 
     RETURN HTTP 200 OK with response
@@ -500,16 +487,9 @@ GET /api/v1/agents?page=1&size=20
       "updatedBy": "user-456"
     }
   ],
-  "page": {
-    "number": 0,
-    "size": 20,
-    "totalElements": 2,
-    "totalPages": 1
-  },
-  "first": true,
-  "last": true,
-  "hasNext": false,
-  "hasPrevious": false
+  "totalElements": 2,
+  "currentPage": 0,
+  "totalPages": 1
 }
 ```
 
@@ -518,14 +498,9 @@ GET /api/v1/agents?page=1&size=20
 | Field | Type | Description |
 |-------|------|-------------|
 | content | array | Array of agent profile DTOs |
-| page.number | integer | Current page number (0-indexed) |
-| page.size | integer | Number of items per page |
-| page.totalElements | integer | Total number of agents matching filters |
-| page.totalPages | integer | Total number of pages available |
-| first | boolean | True if this is the first page |
-| last | boolean | True if this is the last page |
-| hasNext | boolean | True if there is a next page |
-| hasPrevious | boolean | True if there is a previous page |
+| totalElements | integer | Total number of agents matching filters |
+| currentPage | integer | Current page number (0-indexed) |
+| totalPages | integer | Total number of pages available |
 
 ### Empty Result Response
 
@@ -534,16 +509,9 @@ GET /api/v1/agents?page=1&size=20
 ```json
 {
   "content": [],
-  "page": {
-    "number": 0,
-    "size": 20,
-    "totalElements": 0,
-    "totalPages": 0
-  },
-  "first": true,
-  "last": true,
-  "hasNext": false,
-  "hasPrevious": false
+  "totalElements": 0,
+  "currentPage": 0,
+  "totalPages": 0
 }
 ```
 
@@ -640,24 +608,27 @@ GET /api/v1/agents?page=9&size=20
 ```javascript
 // Example: React pagination component logic
 
-const AgentListPagination = ({ response }) => {
-  const { page, hasNext, hasPrevious } = response;
+const AgentListPagination = ({ response, pageSize }) => {
+  const { currentPage, totalPages, totalElements } = response;
+
+  const hasNext = currentPage < totalPages - 1;
+  const hasPrevious = currentPage > 0;
 
   const goToNextPage = () => {
     if (hasNext) {
-      fetchAgents({ page: page.number + 1, size: page.size });
+      fetchAgents({ page: currentPage + 1, size: pageSize });
     }
   };
 
   const goToPreviousPage = () => {
     if (hasPrevious) {
-      fetchAgents({ page: page.number - 1, size: page.size });
+      fetchAgents({ page: currentPage - 1, size: pageSize });
     }
   };
 
   const goToPage = (pageNumber) => {
-    if (pageNumber >= 0 && pageNumber < page.totalPages) {
-      fetchAgents({ page: pageNumber, size: page.size });
+    if (pageNumber >= 0 && pageNumber < totalPages) {
+      fetchAgents({ page: pageNumber, size: pageSize });
     }
   };
 
@@ -668,8 +639,8 @@ const AgentListPagination = ({ response }) => {
       </button>
 
       <span>
-        Page {page.number + 1} of {page.totalPages}
-        ({page.totalElements} total agents)
+        Page {currentPage + 1} of {totalPages}
+        ({totalElements} total agents)
       </span>
 
       <button disabled={!hasNext} onClick={goToNextPage}>
