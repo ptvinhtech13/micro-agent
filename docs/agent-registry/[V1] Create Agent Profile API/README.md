@@ -7,7 +7,7 @@
 **Version**: 1.0.0
 **Last Updated**: 2026-01-10
 
-This API creates a basic agent profile with core metadata including name, version, domain, type, status, and ownership information.
+This API creates a basic agent profile with core metadata including name, version, domain, status, tags, model configuration, and ownership information.
 
 ---
 
@@ -170,7 +170,7 @@ FUNCTION createAgentProfile(request, userContext):
     // ==========================================
     TRY:
         validateRequestSchema(request)
-        validateRequiredFields(request, ["name", "version", "domain", "type"])
+        validateRequiredFields(request, ["name", "version", "domain"])
         validateFieldFormats(request)
         validateFieldConstraints(request)
     CATCH ValidationError:
@@ -203,7 +203,9 @@ FUNCTION createAgentProfile(request, userContext):
             version: request.version,
             status: request.status || "DRAFT",
             domain: request.domain,
-            type: request.type,
+            tags: request.tags || [],
+            modelConfig: request.modelConfig,
+            metadata: request.metadata || {},
             ownerId: userContext.userId,
             ownerType: "USER",
             createdAt: currentTimestamp,
@@ -284,8 +286,9 @@ END CLASS
 |------|-------------|------------|
 | **Unique Name** | Agent name must be unique (case-insensitive) | `AGENT_ALREADY_EXISTS` (409) |
 | **Semantic Version** | Version must follow `MAJOR.MINOR.PATCH` format | `INVALID_VERSION_FORMAT` (400) |
-| **Required Fields** | Name, version, domain, and type are required | `MISSING_REQUIRED_FIELDS` (400) |
+| **Required Fields** | Name, version, and domain are required | `MISSING_REQUIRED_FIELDS` (400) |
 | **Valid Status** | Status must be one of: DRAFT, ACTIVE, INACTIVE, ARCHIVED | `INVALID_STATUS` (400) |
+| **Valid Tags** | Tags must be valid tag IDs from agent_tags table | `INVALID_TAGS` (400) |
 
 ---
 
@@ -302,7 +305,9 @@ INSERT INTO agents (
   version,
   status,
   domain,
-  type,
+  tags,
+  model_config,
+  metadata,
   owner_id,
   owner_type,
   created_at,
@@ -315,8 +320,10 @@ INSERT INTO agents (
   ?,  -- description
   ?,  -- version (e.g., '1.0.0')
   ?,  -- status (default: 'DRAFT')
-  ?,  -- domain (e.g., 'CUSTOMER_SERVICE')
-  ?,  -- type (e.g., 'CONVERSATIONAL')
+  ?,  -- domain (e.g., 'customer-service')
+  ?::jsonb,  -- tags (JSONB array of tag_ids)
+  ?::jsonb,  -- model_config (JSONB)
+  ?::jsonb,  -- metadata (JSONB key-value)
   ?,  -- owner_id (from userContext.userId)
   ?,  -- owner_type (default: 'USER')
   NOW(),  -- created_at
@@ -425,8 +432,22 @@ This API implements an event-driven audit pattern using Kafka for asynchronous, 
   "description": "AI agent for handling customer support inquiries",
   "version": "1.0.0",
   "status": "DRAFT",
-  "domain": "CUSTOMER_SERVICE",
-  "type": "CONVERSATIONAL"
+  "domain": "customer-service",
+  "tags": [
+    "tag-550e8400-e29b-41d4-a716-446655440001",
+    "tag-550e8400-e29b-41d4-a716-446655440002"
+  ],
+  "modelConfig": {
+    "provider": "anthropic",
+    "modelId": "claude-3-opus",
+    "temperature": 0.7,
+    "maxTokens": 4096
+  },
+  "metadata": {
+    "priority": 10,
+    "maxConcurrentRequests": 100,
+    "greetingMessage": "Hello! How can I help you?"
+  }
 }
 ```
 
@@ -435,8 +456,10 @@ This API implements an event-driven audit pattern using Kafka for asynchronous, 
 - `description` (string, optional): Human-readable description of the agent
 - `version` (string, required): Semantic version in MAJOR.MINOR.PATCH format
 - `status` (string, optional): Agent status - DRAFT, ACTIVE, INACTIVE, ARCHIVED (default: DRAFT)
-- `domain` (string, required): Business domain (e.g., CUSTOMER_SERVICE, SALES, SUPPORT)
-- `type` (string, required): Agent type (e.g., CONVERSATIONAL, TASK_ORIENTED, ANALYTICAL)
+- `domain` (string, required): Business domain (e.g., customer-service, sales, support)
+- `tags` (array, optional): Array of tag IDs from agent_tags table
+- `modelConfig` (object, optional): Model configuration (provider, modelId, temperature, maxTokens)
+- `metadata` (object, optional): Custom key-value metadata for extensibility
 
 ### Success Response (201 Created)
 
@@ -447,8 +470,22 @@ This API implements an event-driven audit pattern using Kafka for asynchronous, 
   "description": "AI agent for handling customer support inquiries",
   "version": "1.0.0",
   "status": "DRAFT",
-  "domain": "CUSTOMER_SERVICE",
-  "type": "CONVERSATIONAL",
+  "domain": "customer-service",
+  "tags": [
+    "tag-550e8400-e29b-41d4-a716-446655440001",
+    "tag-550e8400-e29b-41d4-a716-446655440002"
+  ],
+  "modelConfig": {
+    "provider": "anthropic",
+    "modelId": "claude-3-opus",
+    "temperature": 0.7,
+    "maxTokens": 4096
+  },
+  "metadata": {
+    "priority": 10,
+    "maxConcurrentRequests": 100,
+    "greetingMessage": "Hello! How can I help you?"
+  },
   "ownerId": "user-123",
   "ownerType": "USER",
   "createdAt": "2026-01-10T12:00:00Z",
@@ -508,8 +545,17 @@ curl -X POST "https://api.example.com/api/v1/agents" \
     "description": "AI agent for handling customer support inquiries",
     "version": "1.0.0",
     "status": "DRAFT",
-    "domain": "CUSTOMER_SERVICE",
-    "type": "CONVERSATIONAL"
+    "domain": "customer-service",
+    "tags": ["tag-550e8400-e29b-41d4-a716-446655440001"],
+    "modelConfig": {
+      "provider": "anthropic",
+      "modelId": "claude-3-opus",
+      "temperature": 0.7,
+      "maxTokens": 4096
+    },
+    "metadata": {
+      "priority": 10
+    }
   }'
 ```
 
@@ -527,8 +573,17 @@ const response = await fetch('https://api.example.com/api/v1/agents', {
     description: 'AI agent for handling customer support inquiries',
     version: '1.0.0',
     status: 'DRAFT',
-    domain: 'CUSTOMER_SERVICE',
-    type: 'CONVERSATIONAL'
+    domain: 'customer-service',
+    tags: ['tag-550e8400-e29b-41d4-a716-446655440001'],
+    modelConfig: {
+      provider: 'anthropic',
+      modelId: 'claude-3-opus',
+      temperature: 0.7,
+      maxTokens: 4096
+    },
+    metadata: {
+      priority: 10
+    }
   })
 });
 
@@ -553,8 +608,17 @@ response = requests.post(
         'description': 'AI agent for handling customer support inquiries',
         'version': '1.0.0',
         'status': 'DRAFT',
-        'domain': 'CUSTOMER_SERVICE',
-        'type': 'CONVERSATIONAL'
+        'domain': 'customer-service',
+        'tags': ['tag-550e8400-e29b-41d4-a716-446655440001'],
+        'modelConfig': {
+            'provider': 'anthropic',
+            'modelId': 'claude-3-opus',
+            'temperature': 0.7,
+            'maxTokens': 4096
+        },
+        'metadata': {
+            'priority': 10
+        }
     }
 )
 

@@ -112,7 +112,9 @@ FUNCTION getAgentProfile(agentId, userContext):
             version: agentProfile.version,
             status: agentProfile.status,
             domain: agentProfile.domain,
-            type: agentProfile.type,
+            tags: agentProfile.tags,
+            modelConfig: agentProfile.modelConfig,
+            metadata: agentProfile.metadata,
             ownerId: agentProfile.ownerId,
             ownerType: agentProfile.ownerType,
             createdAt: agentProfile.createdAt,
@@ -157,7 +159,9 @@ SELECT
     version,
     status,
     domain,
-    type,
+    tags,
+    model_config,
+    metadata,
     owner_id,
     owner_type,
     created_at,
@@ -197,8 +201,21 @@ WHERE agent_id = ?;
   "description": "AI agent for handling customer support inquiries",
   "version": "1.2.0",
   "status": "ACTIVE",
-  "domain": "CUSTOMER_SERVICE",
-  "type": "CONVERSATIONAL",
+  "domain": "customer-service",
+  "tags": [
+    "tag-550e8400-e29b-41d4-a716-446655440001",
+    "tag-550e8400-e29b-41d4-a716-446655440002"
+  ],
+  "modelConfig": {
+    "provider": "anthropic",
+    "modelId": "claude-3-opus",
+    "temperature": 0.7,
+    "maxTokens": 4096
+  },
+  "metadata": {
+    "priority": 10,
+    "maxConcurrentRequests": 100
+  },
   "ownerId": "user-123",
   "ownerType": "USER",
   "createdAt": "2026-01-05T10:30:00Z",

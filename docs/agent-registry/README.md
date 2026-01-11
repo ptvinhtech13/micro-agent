@@ -8,6 +8,25 @@ Complete API documentation for Agent Registry service.
 
 ---
 
+## Architecture Overview
+
+The Agent Registry uses a simplified 4-table architecture:
+
+- **`agents`** - Core agent profiles with identity, domain, tags, model config, and custom metadata
+- **`agent_tags`** - Standardized, reusable tag registry for categorization
+- **`agent_policy_mappings`** - One-to-Many mapping (one agent → many policy bundles)
+- **`policy_bundles`** - Policy governance and compliance rules
+
+**Key Features:**
+- ✅ Tags stored as JSONB array of tag IDs for flexibility
+- ✅ Model configuration separated from custom metadata
+- ✅ One agent can have multiple policy bundles
+- ✅ No AgentType enum (use tags or metadata instead)
+
+For detailed architecture documentation, see `/docs/architecture/agent_registry_architecture.md`
+
+---
+
 ## API Endpoints
 
 ### Agent Management APIs
@@ -78,5 +97,111 @@ List endpoints support pagination:
 
 ---
 
-**Last Updated**: 2026-01-10
+## Agent Profile Structure
+
+### Core Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `agentId` | String (UUID) | Yes | Unique agent identifier |
+| `name` | String | Yes | Unique agent name (case-insensitive) |
+| `description` | String | No | Human-readable description |
+| `version` | String | Yes | Semantic version (MAJOR.MINOR.PATCH) |
+| `status` | Enum | Yes | DRAFT, ACTIVE, INACTIVE, ARCHIVED |
+| `domain` | String | Yes | Business domain (e.g., "customer-service") |
+| `tags` | Array[String] | No | Array of tag IDs from agent_tags table |
+| `modelConfig` | Object | No | Model configuration (provider, modelId, etc.) |
+| `metadata` | Object | No | Custom key-value metadata |
+| `ownerId` | String | Yes | Owner user ID |
+| `ownerType` | String | Yes | USER, TEAM, ORGANIZATION |
+
+### Example Agent Profile
+
+```json
+{
+  "agentId": "550e8400-e29b-41d4-a716-446655440000",
+  "name": "customer-support-agent",
+  "description": "AI agent for handling customer support inquiries",
+  "version": "1.2.0",
+  "status": "ACTIVE",
+  "domain": "customer-service",
+  "tags": [
+    "tag-550e8400-e29b-41d4-a716-446655440001",
+    "tag-550e8400-e29b-41d4-a716-446655440002"
+  ],
+  "modelConfig": {
+    "provider": "anthropic",
+    "modelId": "claude-3-opus",
+    "temperature": 0.7,
+    "maxTokens": 4096
+  },
+  "metadata": {
+    "priority": 10,
+    "maxConcurrentRequests": 100,
+    "greetingMessage": "Hello! How can I help you?",
+    "featureFlags": {
+      "enableStreaming": true,
+      "enableCaching": false
+    }
+  },
+  "ownerId": "user-123",
+  "ownerType": "USER",
+  "createdAt": "2026-01-05T10:30:00Z",
+  "updatedAt": "2026-01-08T14:22:00Z",
+  "createdBy": "user-123",
+  "updatedBy": "user-123"
+}
+```
+
+---
+
+## Tag System
+
+### AgentTag Structure
+
+Tags are standardized, categorized, and reusable across all agents.
+
+**Categories:**
+- `CAPABILITY` - What the agent can do (e.g., "customer-support", "order-processing")
+- `DOMAIN` - Business domain (e.g., "banking", "healthcare")
+- `FEATURE` - Technical features (e.g., "streaming", "multi-modal")
+- `TOOL` - Tools/integrations (e.g., "web-search", "database-access")
+- `LANGUAGE` - Languages supported (e.g., "english", "spanish")
+- `CUSTOM` - User-defined tags
+
+**Usage:**
+- Agents reference tags by tag_id (UUID)
+- Tags are stored as JSONB array in the agents table
+- Many-to-many relationship without junction table
+
+---
+
+## Policy Management
+
+### Agent-Policy Relationship
+
+One agent can have multiple policy bundles through the `agent_policy_mappings` table.
+
+**Use Cases:**
+- Apply different policies for different environments (dev, staging, prod)
+- Version control for policy updates
+- Gradual rollout of new policies
+- Compliance tracking and audit
+
+**Mapping Structure:**
+```json
+{
+  "mappingId": "mapping-uuid",
+  "agentId": "agent-uuid",
+  "policyBundleId": "policy-uuid",
+  "policyVersion": "1.0.0",
+  "isActive": true,
+  "appliedAt": "2026-01-10T12:00:00Z",
+  "appliedBy": "user-123"
+}
+```
+
+---
+
+**Last Updated**: 2026-01-11
 **Maintained By**: API Team
