@@ -126,7 +126,7 @@ public class UserCommandServiceImpl implements UserCommandService {
 // Query Service - Read Operations
 public interface UserQueryService {
     Optional<User> findUserById(UserId id);
-    Paging<User> queryUsers(UserPaginationQuery query);
+    Page<User> queryUsers(UserPaginationQuery query);
 }
 
 @Service
@@ -594,13 +594,13 @@ public class UserController implements UserApi {
             .direction(direction)
             .build();
 
-        var paging = userQueryService.queryUsers(query);
+        var page = userQueryService.queryUsers(query);
 
         return PageResponse.<UserResponse>builder()
-            .content(UserResponseMapper.INSTANCE.toUserResponseList(paging.getContent()))
-            .totalElements(paging.getTotalElements())
-            .totalPages(paging.getTotalPages())
-            .currentPage(paging.getCurrentPage())
+            .content(UserResponseMapper.INSTANCE.toUserResponseList(page.getContent()))
+            .totalElements(page.getTotalElements())
+            .totalPages(page.getTotalPages())
+            .currentPage(page.getCurrentPage())
             .build();
     }
 

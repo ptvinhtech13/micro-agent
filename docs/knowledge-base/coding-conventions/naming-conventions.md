@@ -725,7 +725,7 @@ public User saveUser(...);                     // Use create/update
 // ✅ Good - Query service methods
 public User getUserById(UserId id);                           // Single item, throws if not found
 public Optional<User> findUserByEmail(String email);          // Single item, Optional
-public Paging<User> queryUsers(UserPaginationQuery query);   // Paginated results
+public Page<User> queryUsers(UserPaginationQuery query);   // Paginated results
 public long countUsersByStatus(UserStatus status);           // Count
 public boolean existsUserByEmail(String email);              // Boolean check
 

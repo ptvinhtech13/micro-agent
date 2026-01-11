@@ -38,7 +38,7 @@ public class UserQueryServiceImpl implements UserQueryService {
 
     @Override
     @Transactional(readOnly = true)
-    public Paging<User> queryUsers(UserPaginationQuery query) {
+    public Page<User> queryUsers(UserPaginationQuery query) {
         return userRepository.queryUsers(query);
     }
 }
@@ -467,13 +467,13 @@ public ResponseEntity<String> handleError(Exception ex) {
 // ✅ Good
 @Override
 @Transactional(readOnly = true)
-public Paging<User> queryUsers(UserPaginationQuery query) {
+public Page<User> queryUsers(UserPaginationQuery query) {
     Page<UserEntity> page = userRepository.findAll(
         buildPredicate(query),
         PageRequest.of(query.getPage(), query.getSize())
     );
 
-    return new Paging<>(
+    return new Page<>(
         page.getContent().stream()
             .map(UserEntityMapper.INSTANCE::toModel)
             .toList(),
